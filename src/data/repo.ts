@@ -51,6 +51,10 @@ export interface Repo {
   toggleListItem(listId: string, itemId: string): Promise<void>;
   /** save / unsave someone's list. Returns the new state. */
   toggleSaveList(listId: string): Promise<boolean>;
+  setLang(lang: UserData['lang']): Promise<void>;
+  /** add / remove a runway frame for a show; null removes the frame at index */
+  setLook(showId: string, index: number, uri: string | null): Promise<void>;
+  addSuggestion(text: string): Promise<void>;
 }
 
 export const emptyUserData = (): UserData => ({
@@ -198,6 +202,15 @@ export class LocalRepo implements Repo {
     await this.persist();
     return !on;
   }
+  async setLang(lang: UserData['lang']) { this.me.lang = lang; await this.persist(); }
+  async setLook(showId: string, index: number, uri: string | null) {
+    const looks = { ...(this.me.looks ?? {}) };
+    const arr = [...(looks[showId] ?? [])];
+    if (uri) { if (index >= arr.length) arr.push(uri); else arr[index] = uri; } else arr.splice(index, 1);
+    looks[showId] = arr; this.me.looks = looks;
+    await this.persist();
+  }
+  async addSuggestion(text: string) { this.me.suggestions = [...(this.me.suggestions ?? []), text]; await this.persist(); }
 }
 
 export const BRAND_STATUS_LABEL: Record<BrandStatus, string> = { loyal: 'Sadığım', sometimes: 'Ara sıra', left: 'Koptum' };

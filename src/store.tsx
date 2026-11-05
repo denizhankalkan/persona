@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { KIND_ROUTE, LocalRepo, ME_ID, type NewItem, type Repo, type ShelfPatch, type Snapshot } from './data/repo';
 import { supabaseEnabled } from './data/supabase';
+import { LangProvider, deviceLang, type Lang } from './i18n';
 import { STARRED, type Activity, type Brand, type Comment, type Follow, type FollowStatus, type Item, type List, type Persona, type Review, type Shelf, type ShelfEntry, type Show, type Style, type SubjectKind, type User, type UserData, type Visibility } from './data/types';
 
 export type Access = 'owner' | 'open' | 'pending' | 'locked' | 'private';
@@ -79,6 +80,11 @@ type Ctx = {
   addItem: (n: NewItem) => Promise<Item>;
   addList: (l: Pick<List, 'title' | 'description' | 'itemIds'>) => Promise<List>;
   toggleListItem: (listId: string, itemId: string) => Promise<void>;
+  lang: Lang;
+  setLang: (lang: Lang | undefined) => Promise<void>;
+  looksOf: (showId: string) => string[];
+  setLook: (showId: string, index: number, uri: string | null) => Promise<void>;
+  addSuggestion: (text: string) => Promise<void>;
   savedList: (listId: string) => boolean;
   savesOf: (listId: string) => number;
   toggleSaveList: (listId: string) => Promise<void>;
@@ -197,17 +203,17 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       return { avg: (base.avg * base.n + avg * rs.length) / (base.n + rs.length), n: base.n + rs.length, dist: dist5(rs) };
     };
     const ownedFrom = (uid: string, p: Persona) => {
-      const have = rawShelves(uid).filter((s) => s.shelf === 'owned').map((s) => s.itemId);
+      const have = rawShelves(uid).filter((s) => s.shelf === 'showcase').map((s) => s.itemId);
       return p.itemIds.filter((id) => have.includes(id)).length;
     };
     const storesOf = (uid: string) => {
       const m = new Map<string, number>();
-      shelvesOf(uid).forEach((s) => { if (s.store && s.shelf === 'owned') { const k = s.store.split(',')[0].trim(); m.set(k, (m.get(k) ?? 0) + 1); } });
+      shelvesOf(uid).forEach((s) => { if (s.store && s.shelf === 'showcase') { const k = s.store.split(',')[0].trim(); m.set(k, (m.get(k) ?? 0) + 1); } });
       return [...m.entries()].map(([store, n]) => ({ store, n })).sort((a, b) => b.n - a.n);
     };
     const purchasesOf = (itemId: string) =>
       snap.shelves
-        .filter((s) => s.itemId === itemId && s.shelf === 'owned' && s.store && !s.hidden && access(s.userId) === 'open' && followStatus(s.userId) === 'accepted')
+        .filter((s) => s.itemId === itemId && s.shelf === 'showcase' && s.store && !s.hidden && access(s.userId) === 'open' && followStatus(s.userId) === 'accepted')
         .map((entry) => ({ user: user(entry.userId)!, entry }))
         .filter((x) => x.user);
     const feed = (): Activity[] => {
@@ -335,6 +341,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         patchMe((m) => ({ ...m, lists: [nl, ...m.lists] }));
         return nl;
       },
+      looksOf: (sid) => me.looks?.[sid] ?? [],
+      async setLook(sid, index, uri) {
+        patchMe((m) => { const looks = { ...(m.looks ?? {}) }; const arr = [...(looks[sid] ?? [])]; if (uri) { if (index >= arr.length) arr.push(uri); else arr[index] = uri; } else arr.splice(index, 1); looks[sid] = arr; return { ...m, looks }; });
+        await repo?.setLook(sid, index, uri);
+      },
+      lang: me.lang ?? deviceLang(),
+      async setLang(l) { patchMe((m) => ({ ...m, lang: l })); await repo?.setLang(l); },
+      async addSuggestion(text) { patchMe((m) => ({ ...m, suggestions: [...(m.suggestions ?? []), text] })); await repo?.addSuggestion(text); },
       savedList: (id) => me.savedLists.includes(id),
       savesOf: (id) => (list(id)?.saves ?? 0) + (me.savedLists.includes(id) ? 1 : 0),
       async toggleSaveList(id) {
@@ -349,7 +363,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     };
   }, [ready, snap, me, meId, meUser, repo, reload]);
 
-  return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
+  return <StoreCtx.Provider value={value}><LangProvider value={value.lang}>{children}</LangProvider></StoreCtx.Provider>;
 }
 
 export function useStore() {

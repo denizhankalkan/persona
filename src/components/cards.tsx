@@ -5,23 +5,26 @@ import { Photo, ProductImage } from './ProductImage';
 import { Avatar, Body, Chip, Display, Eyebrow, Small, Stars, Tag } from './ui';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
+import { useT, type Lang } from '@/i18n';
 import { KIND_LABEL } from '@/data/repo';
 import type { Brand, Item, List, Review, Show, Style, User } from '@/data/types';
 
 export const fmt = (n: number) => new Intl.NumberFormat('tr-TR').format(n);
 
-export function timeAgo(t: number) {
+export function timeAgo(t: number, lang: Lang = 'tr') {
   const h = Math.max(1, Math.round((Date.now() - t) / 3600e3));
-  if (h < 24) return `${h} sa önce`;
+  const en = lang !== 'tr';
+  if (h < 24) return en ? `${h}h ago` : `${h} sa önce`;
   const d = Math.round(h / 24);
-  if (d < 30) return `${d} gün önce`;
-  return `${Math.round(d / 30)} ay önce`;
+  if (d < 30) return en ? `${d}d ago` : `${d} gün önce`;
+  return en ? `${Math.round(d / 30)}mo ago` : `${Math.round(d / 30)} ay önce`;
 }
 
 /* ---------- item tile (grid) ---------- */
 export function ItemTile({ item, caption, compact }: { item: Item; caption?: string; compact?: boolean }) {
   const { c, f } = useTheme();
   const { myShelf, rating } = useStore();
+  const { tx } = useT();
   const shelf = myShelf(item.id);
   const r = rating({ kind: 'item', id: item.id });
   const router = useRouter();
@@ -29,11 +32,11 @@ export function ItemTile({ item, caption, compact }: { item: Item; caption?: str
     <Pressable onPress={() => router.push(`/item/${item.id}`)} style={{ flex: 1, gap: 6 }}>
       <View>
         <ProductImage item={item} ratio={0.8} size={compact ? 13 : 16} />
-        {caption ? <View style={{ position: 'absolute', left: 0, top: 0, backgroundColor: 'rgba(255,255,255,.92)', paddingVertical: 3, paddingHorizontal: 6 }}><Text style={{ fontFamily: f.bodyBold, fontSize: 8, letterSpacing: 1, textTransform: 'uppercase', color: '#000' }}>{caption}</Text></View> : null}
-        {shelf ? <View style={{ position: 'absolute', right: 6, bottom: 6, width: 22, height: 22, borderRadius: 11, backgroundColor: shelf === 'owned' ? c.accent : c.ink, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: shelf === 'owned' ? c.accentInk : c.inkFg, fontSize: 11, fontFamily: f.bodyBold }}>{shelf === 'owned' ? '✓' : '♡'}</Text></View> : null}
+        {caption ? <View style={{ position: 'absolute', left: 0, top: 0, backgroundColor: 'rgba(243,238,227,.92)', paddingVertical: 3, paddingHorizontal: 6 }}><Text style={{ fontFamily: f.bodyBold, fontSize: 8, letterSpacing: 1, textTransform: 'uppercase', color: '#0B0B0B' }}>{tx(caption)}</Text></View> : null}
+        {shelf ? <View style={{ position: 'absolute', right: 6, bottom: 6, width: 22, height: 22, borderRadius: 11, backgroundColor: shelf === 'showcase' ? c.accent : c.ink, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: shelf === 'showcase' ? c.accentInk : c.inkFg, fontSize: 11, fontFamily: f.bodyBold }}>{shelf === 'showcase' ? '✓' : '♥'}</Text></View> : null}
       </View>
       <Body weight="semi" style={{ fontSize: compact ? 12 : 13, lineHeight: compact ? 15 : 17 }} numberOfLines={2}>{item.name}</Body>
-      <Small numberOfLines={1} style={{ fontSize: 11 }}>{item.brandName ?? item.category}{r.n ? ` · ${r.avg.toFixed(1)}` : item.priceText ? ' · ' + item.priceText : ''}</Small>
+      <Small numberOfLines={1} style={{ fontSize: 11 }}>{item.brandName ?? tx(item.category)}{r.n ? ` · ${r.avg.toFixed(1)}` : item.priceText ? ' · ' + item.priceText : ''}</Small>
     </Pressable>
   );
 }
@@ -53,16 +56,17 @@ export function ItemGrid({ items, captions, cols = 2 }: { items: Item[]; caption
   );
 }
 
-/** horizontal strip of small tiles (Akış: "bu hafta en çok eklenenler") */
+/** horizontal strip of small tiles (Akış: "bu hafta en çok vitrine eklenenler") */
 export function ItemStrip({ items }: { items: Item[] }) {
   const router = useRouter();
+  const { tx } = useT();
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
       {items.slice(0, 4).map((it) => (
         <Pressable key={it.id} onPress={() => router.push(`/item/${it.id}`)} style={{ flex: 1, gap: 4 }}>
           <ProductImage item={it} ratio={0.8} size={12} />
           <Small numberOfLines={1} muted={false} style={{ fontSize: 11 }}>{it.name}</Small>
-          <Small numberOfLines={1} style={{ fontSize: 10 }}>{it.brandName ?? it.category}</Small>
+          <Small numberOfLines={1} style={{ fontSize: 10 }}>{it.brandName ?? tx(it.category)}</Small>
         </Pressable>
       ))}
     </View>
@@ -73,6 +77,7 @@ export function ItemStrip({ items }: { items: Item[] }) {
 export function ItemRow({ item, sub, note }: { item: Item; sub?: string; note?: string }) {
   const { c } = useTheme();
   const { myShelf, setShelf } = useStore();
+  const { t, tx } = useT();
   const shelf = myShelf(item.id);
   const router = useRouter();
   return (
@@ -81,11 +86,11 @@ export function ItemRow({ item, sub, note }: { item: Item; sub?: string; note?: 
         <View style={{ width: 48 }}><ProductImage item={item} ratio={0.8} size={9} /></View>
         <View style={{ flex: 1, gap: 1 }}>
           <Body weight="semi" style={{ fontSize: 14, lineHeight: 18 }} numberOfLines={2}>{item.name}</Body>
-          <Small numberOfLines={1}>{sub ?? `${item.brandName ?? item.category}${item.priceText ? ' · ' + item.priceText : ''}`}</Small>
-          {note ? <Small style={{ color: c.accent }} weight="semi" numberOfLines={1}>{note}</Small> : null}
+          <Small numberOfLines={1}>{sub ?? `${item.brandName ?? tx(item.category)}${item.priceText ? ' · ' + item.priceText : ''}`}</Small>
+          {note ? <Small style={{ color: c.accent }} weight="semi" numberOfLines={1}>{tx(note)}</Small> : null}
         </View>
       </Pressable>
-      <Chip label={shelf === 'owned' ? 'Bende ✓' : 'Bende'} on={shelf === 'owned'} tone="green" onPress={() => setShelf(item.id, shelf === 'owned' ? null : 'owned')} />
+      <Chip label={shelf === 'showcase' ? t('Vitrinde ✓') : t('Vitrine ekle')} on={shelf === 'showcase'} tone="green" onPress={() => setShelf(item.id, shelf === 'showcase' ? null : 'showcase')} />
     </View>
   );
 }
@@ -94,6 +99,7 @@ export function ItemRow({ item, sub, note }: { item: Item; sub?: string; note?: 
 export function ListCard({ l, wide }: { l: List; wide?: boolean }) {
   const { c } = useTheme();
   const { item, userName, persona, savesOf, reviewsFor } = useStore();
+  const { t } = useT();
   const router = useRouter();
   const items = l.itemIds.map(item).filter(Boolean) as Item[];
   const p = l.personaId ? persona(l.personaId) : undefined;
@@ -106,11 +112,11 @@ export function ListCard({ l, wide }: { l: List; wide?: boolean }) {
       </View>
       <View style={{ gap: 2 }}>
         <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-          {p ? <Tag label={p.kind === 'character' ? 'Karakter dolabı' : 'Persona'} tone="ink" /> : null}
-          {l.authorId === 'editor' && !p ? <Tag label="Editör" tone="ink" /> : null}
+          {p ? <Tag label={t(p.kind === 'character' ? 'Karakter dolabı' : 'Persona')} tone="ink" /> : null}
+          {l.authorId === 'editor' && !p ? <Tag label={t('Editör')} tone="ink" /> : null}
         </View>
         <Display size="sm">{l.title}</Display>
-        <Small>{l.itemIds.length} parça · {l.authorId === 'editor' ? 'Persona' : userName(l.authorId)} · {fmt(savesOf(l.id))} kayıt{talk ? ` · ${talk} yorum` : ''}</Small>
+        <Small>{t('{n} parça', { n: l.itemIds.length })} · {l.authorId === 'editor' ? 'Persona' : userName(l.authorId)} · {t('{n} kayıt', { n: fmt(savesOf(l.id)) })}{talk ? ` · ${talk} ${t('yorum')}` : ''}</Small>
       </View>
     </Pressable>
   );
@@ -120,15 +126,16 @@ export function ListCard({ l, wide }: { l: List; wide?: boolean }) {
 export function ShowCard({ s, wide }: { s: Show; wide?: boolean }) {
   const { c } = useTheme();
   const { rating, me } = useStore();
+  const { tx } = useT();
   const router = useRouter();
   const r = rating({ kind: 'show', id: s.id });
   const url = me.links?.[s.id] ?? s.url;
   return (
     <Pressable onPress={() => router.push(`/defile/${s.id}`)} style={{ width: wide ? '100%' : 150, gap: 6 }}>
-      <Photo id={s.id} url={url} imageUrl={s.imageUrl} label={s.brandName} sub={s.season} ratio={wide ? 1.4 : 0.75} size={wide ? 26 : 15} />
+      <Photo id={s.id} url={url} imageUrl={s.imageUrl} label={s.brandName} sub={tx(s.season)} ratio={wide ? 1.4 : 0.75} size={wide ? 26 : 15} />
       <View style={{ gap: 1 }}>
         <Eyebrow color={c.fg}>{s.brandName}</Eyebrow>
-        <Body weight="semi" style={{ fontSize: 13, lineHeight: 17 }} numberOfLines={2}>{s.season}{s.designer ? ` · ${s.designer}` : ''}</Body>
+        <Body weight="semi" style={{ fontSize: 13, lineHeight: 17 }} numberOfLines={2}>{tx(s.season)}{s.designer ? ` · ${s.designer}` : ''}</Body>
         <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}><Stars value={r.avg} size={11} /><Small style={{ fontSize: 11 }}>{r.avg.toFixed(1)} · {fmt(r.n)}</Small></View>
       </View>
     </Pressable>
@@ -156,18 +163,18 @@ export function StyleCard({ s }: { s: Style }) {
 export function BrandRow({ b }: { b: Brand }) {
   const { c } = useTheme();
   const { rating } = useStore();
+  const { t, tx } = useT();
   const router = useRouter();
   const r = rating({ kind: 'brand', id: b.id });
-  const avg = r.n ? r.avg : (b.scores.quality + b.scores.fit + b.scores.fabric + b.scores.price) / 4;
   return (
     <Pressable onPress={() => router.push(`/marka/${b.id}`)} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderBottomColor: c.line, paddingVertical: 10 }}>
       <View style={{ flex: 1, gap: 1 }}>
         <Display size="sm">{b.name}</Display>
-        <Small>{b.origin} · {fmt(b.reviewCount + r.n)} görüş</Small>
+        <Small>{tx(b.origin)} · {t('{n} görüş', { n: fmt(r.n) })}</Small>
       </View>
       <View style={{ alignItems: 'flex-end', gap: 1 }}>
-        <Stars value={avg} size={12} />
-        <Small style={{ fontSize: 11, color: b.leftPct >= 30 ? c.danger : c.muted }}>%{b.leftPct} koptu</Small>
+        <Stars value={r.avg} size={12} />
+        <Small style={{ fontSize: 11, color: b.leftPct >= 30 ? c.danger : c.muted }}>%{b.leftPct} {t('koptu')}</Small>
       </View>
     </Pressable>
   );
@@ -177,21 +184,23 @@ export function BrandRow({ b }: { b: Brand }) {
 export function PersonRow({ u, right }: { u: User; right?: React.ReactNode }) {
   const { c } = useTheme();
   const { meId, shelvesOf, reviewsBy, access } = useStore();
+  const { t } = useT();
   const router = useRouter();
   const me = u.id === meId;
   const acc = access(u.id);
-  const owned = shelvesOf(u.id).filter((s) => s.shelf === 'owned').length;
+  const shown = shelvesOf(u.id).filter((s) => s.shelf === 'showcase').length;
   const reviews = reviewsBy(u.id).length;
+  const state = acc === 'open' || acc === 'owner' ? t('{n} parça', { n: shown }) : acc === 'private' ? t('gizli') : t('takipçilerime');
   return (
     <Pressable disabled={me} onPress={() => router.push(`/user/${u.id}`)} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderBottomColor: c.line, paddingVertical: 10 }}>
       <Avatar name={me ? 'S' : u.name} accent={me} />
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-          <Body weight="semi" style={{ fontSize: 14 }}>{me ? 'Sen' : u.name}</Body>
+          <Body weight="semi" style={{ fontSize: 14 }}>{me ? t('Senin dolabın') : u.name}</Body>
           <Small>{u.handle}</Small>
-          {u.isExample ? <Tag label="örnek" tone="dashed" /> : null}
+          {u.isExample ? <Tag label={t('örnek')} tone="dashed" /> : null}
         </View>
-        <Small>{acc === 'open' || acc === 'owner' ? `${owned} parça · ` : acc === 'private' ? 'dolabı gizli · ' : 'dolabı takipçilerine açık · '}{reviews} yorum</Small>
+        <Small>{state} · {reviews} {t('yorum')}</Small>
       </View>
       {right}
     </Pressable>
@@ -202,6 +211,7 @@ export function PersonRow({ u, right }: { u: User; right?: React.ReactNode }) {
 export function ReviewCard({ r, showTarget, compact }: { r: Review; showTarget?: boolean; compact?: boolean }) {
   const { c, f } = useTheme();
   const { userName, user, commentsFor, meId, subjectName, likesOf, liked, toggleLike } = useStore();
+  const { t, tx, lang } = useT();
   const router = useRouter();
   const u = user(r.userId);
   const comments = commentsFor(r.id);
@@ -213,16 +223,16 @@ export function ReviewCard({ r, showTarget, compact }: { r: Review; showTarget?:
         <Avatar name={r.userId === meId ? 'S' : u?.name ?? '?'} size={26} accent={r.userId === meId} />
         <Body weight="semi" style={{ fontSize: 14 }}>{userName(r.userId)}</Body>
         {r.rating > 0 ? <Stars value={r.rating} /> : null}
-        {r.brandStatus ? <Tag label={{ loyal: 'Sadığım', sometimes: 'Ara sıra', left: 'Koptum' }[r.brandStatus]} tone={r.brandStatus === 'left' ? 'ink' : 'neutral'} /> : null}
-        <Small style={{ marginLeft: 'auto' }}>{timeAgo(r.createdAt)}</Small>
+        {r.brandStatus ? <Tag label={t({ loyal: 'Sadığım', sometimes: 'Ara sıra', left: 'Koptum' }[r.brandStatus])} tone={r.brandStatus === 'left' ? 'ink' : 'neutral'} /> : null}
+        <Small style={{ marginLeft: 'auto' }}>{timeAgo(r.createdAt, lang)}</Small>
       </View>
-      {showTarget ? <Small weight="bold" muted={false} style={{ color: c.accent, fontSize: 10, letterSpacing: 1.4, textTransform: 'uppercase' }}>{KIND_LABEL[r.targetType]} · {subjectName({ kind: r.targetType, id: r.targetId })}</Small> : null}
+      {showTarget ? <Small weight="bold" muted={false} style={{ color: c.accent, fontSize: 10, letterSpacing: 1.4, textTransform: 'uppercase' }}>{t(KIND_LABEL[r.targetType])} · {tx(subjectName({ kind: r.targetType, id: r.targetId }))}</Small> : null}
       <Body numberOfLines={compact ? 3 : undefined} style={compact ? undefined : { fontFamily: f.displayRegular, fontSize: 18, lineHeight: 25 }}>{r.body}</Body>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Pressable onPress={() => toggleLike(r.id)} hitSlop={8} accessibilityLabel={on ? 'Beğenmekten vazgeç' : 'Beğen'}>
+        <Pressable onPress={() => toggleLike(r.id)} hitSlop={8} accessibilityLabel={t(on ? 'Beğenmekten vazgeç' : 'Beğen')}>
           <Small weight="bold" muted={!on} style={on ? { color: c.accent } : undefined}>{on ? '♥' : '♡'} {likes}</Small>
         </Pressable>
-        <Small style={{ marginLeft: 'auto' }}>{comments.length ? `${comments.length} yanıt · ` : ''}tartış →</Small>
+        <Small style={{ marginLeft: 'auto' }}>{comments.length ? `${t('{n} yanıt', { n: comments.length })} · ` : ''}{t('tartış →')}</Small>
       </View>
     </Pressable>
   );
@@ -230,7 +240,8 @@ export function ReviewCard({ r, showTarget, compact }: { r: Review; showTarget?:
 
 export function ReviewList({ reviews, showTarget, empty = 'İlk yorumu sen yaz.' }: { reviews: Review[]; showTarget?: boolean; empty?: string }) {
   const { c } = useTheme();
-  if (!reviews.length) return <Small>{empty}</Small>;
+  const { t } = useT();
+  if (!reviews.length) return <Small>{t(empty)}</Small>;
   return (
     <View style={{ gap: 14 }}>
       {reviews.map((r, i) => (

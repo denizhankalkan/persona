@@ -50,7 +50,8 @@
           "backgroundColor": "#F3EEE3"
         }
       ],
-      "expo-image"
+      "expo-image",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,6 +1,12 @@
 # Persona
 
-Goodreads ve Letterboxd'nin moda hali. **Letterboxd'da film ne ise bizde model o:** yıldız yalnızca iki esere verilir — **parça** (belirli bir model: "Sézane Clyde trençkot") ve **koleksiyon** (defile: "Chanel İlkbahar/Yaz 2026"). **Marka** (yönetmen), **stil** (tür: boho, western, sessiz lüks…) ve **dolap/liste** (karakter dolapları, persona vitrinleri, kullanıcı listeleri) sayfaları vardır; puanları parçalarından hesaplanır, altlarında tartışma döner, listeler kaydedilir. Kategori (trençkot) sayfa değil, filtredir. Kişi hiçbir zaman puanlanmaz. Raflar (Bende / İstiyorum), "nereden aldım", arkadaş/takip isteği ve izin modeli.
+Goodreads ve Letterboxd'nin moda hali. **Letterboxd'da film ne ise bizde model o:** yıldız yalnızca iki esere verilir — **parça** (belirli bir model: "Sézane Clyde trençkot") ve **koleksiyon** (defile: "Chanel İlkbahar/Yaz 2026"). **Marka** (yönetmen), **stil** (tür: boho, western, sessiz lüks…) ve **dolap/liste** (karakter dolapları, persona vitrinleri, kullanıcı listeleri) sayfaları vardır; puanları parçalarından hesaplanır, altlarında tartışma döner, listeler kaydedilir. Kategori (trençkot) sayfa değil, filtredir. Kişi hiçbir zaman puanlanmaz.
+
+Modelde iki eylem: **Vitrine ekle** (aldım, gösteriyorum; "nereden aldım" buraya bağlı) ve **Kaydet** (favoriler). "Bende / onda var bende yok" yok; kıyas yok. Arkadaş = kapalı dolaba istek + onay; o zaman aldıklarını model model, nereden aldığıyla görürsün; parça tek tek gizlenebilir.
+
+Sekmeler: **Akış · Keşfet · (+) Ekle · Ekranda · Dolabım.** Ekranda: dizi ve filmlerde giyilenler (karakter dolapları). Koleksiyon sayfası Vogue Runway gibi numaralı görünümler (01, 02…): ilk görsel markanın resmi defile sayfasından, diğerleri kullanıcının eklediği kareler. Vogue Runway abonelikli ve telifli; oradan çekilmez.
+
+Dil: Türkçe ve İngilizce (cihaz diline göre; Dolabım → Düzenle → Dil). Fransızca ve Rusça altyapıda hazır, metinler bekliyor (`src/i18n.ts`: Türkçe kaynak metin, diğerleri sözlük).
 
 Görsel dil: **siyah · krem · turkuaz.** Krem kâğıt sayfa, siyah bantlar ve sekme çubuğu, tek vurgu Tiffany/İznik turkuazı (Pantone 15-5217 TCX, `#53B0AE`). Köşe yok, ince çizgiler, Bodoni başlık. Osmanlı dokunuşu tek motif: lale ve kıvrık dal (`src/components/Motif.tsx`), yalnızca siyah bantların üstünde, soluk. `src/theme.ts`.
 
@@ -22,11 +28,12 @@ app/                     Expo Router ekranları (4 sekme + Ekle)
   (tabs)/index.tsx       Akış  — bu hafta en çok eklenenler + takip ettiklerinin hareketleri
   (tabs)/kesfet.tsx      Keşfet — tek arama; listeler, defileler, stiller, markalar, parçalar, kişiler
   (tabs)/ekle.tsx        (+) düğmesi → ekle.tsx modalı
-  (tabs)/dolabim.tsx     Dolabım — 4 imza parça, raflar, nereden alıyorum, listelerim, yorumlarım, izinler
-  ekle.tsx               Ekle: resmi link yapıştır ya da ara → onayla → raf, yıldız, iki satır, nereden aldım
-  item/[id].tsx          Parça: fotoğraf, Bende/İstiyorum/Listeye, nereden aldılar, yorumlar
+  (tabs)/ekranda.tsx     Ekranda — dizi/film karakter dolapları, "hangi dizi?" önerisi
+  (tabs)/dolabim.tsx     Dolabım — 4 imza parça, vitrinim/favorilerim, nereden alıyorum, listelerim, yorumlarım, izinler, dil
+  ekle.tsx               Ekle: resmi link yapıştır ya da ara → onayla → vitrine ekle/kaydet, yıldız, iki satır, nereden aldım
+  item/[id].tsx          Parça (model): fotoğraf, Vitrine ekle/Kaydet/Listeye, nereden aldılar, yorumlar
   marka/[id].tsx         Marka: koptu oranı, topluluk puanı, sadığım/ara sıra/koptum, parçaları, defileleri
-  defile/[id].tsx        Defile: marka × sezon, tek kimlik; yıldız + yorum
+  defile/[id].tsx        Defile: marka × sezon, tek kimlik; numaralı görünümler (01, 02…); yıldız + yorum
   stil/[id].tsx          Stil: imza parçalar, katalogda bu stil, podyumda, trend mi kalıcı mı
   liste/[id].tsx         Liste / dolap: karakter dolapları ve personalar da burada (puanlanır)
   user/[id].tsx          Kişi: izinlere göre imza parçaları, rafları, nereden aldıkları (puan yok)
@@ -38,10 +45,11 @@ src/
   data/seed.ts           Örnek içerik: Hande, Lara, markalar, 7 defile, 10 stil, 5 liste, örnek kullanıcılar
   data/repo.ts           Repo arayüzü + LocalRepo (AsyncStorage)
   data/supabase.ts       SupabaseRepo (aynı arayüz; defile ve stil kataloğu şimdilik uygulamayla gelir)
-  store.tsx              Uygulama durumu, puan hesapları, izinler
+  store.tsx              Uygulama durumu, puan hesapları, izinler, dil
+  i18n.ts                Dil: TR kaynak, EN sözlük; FR/RU yuvaları; katalog token çevirisi (sezon, ay, şehir)
   components/            UI (ui.tsx), kartlar, Reviews (ortak puan + yorum bloğu), Photo/ProductImage, Motif (lale dokusu, react-native-svg)
   unfurl.ts              Resmi sayfadan fotoğraf okuma
-supabase/schema.sql      Tablolar + RLS + tetikleyiciler (review_likes, user_items, lists, list_items, list_saves dahil; reviews.rating 0 = tartışma)
+supabase/schema.sql      Tablolar + RLS + tetikleyiciler (review_likes, user_items, lists, list_items, list_saves, show_looks, suggestions, profiles.lang; shelves.shelf = showcase|saved; reviews.rating 0 = tartışma)
 supabase/seed.sql        Katalog verisi (scripts/make-seed-sql.mjs üretir)
 ```
 

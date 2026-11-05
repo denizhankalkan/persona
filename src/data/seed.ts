@@ -15,13 +15,14 @@ export const BRANDS: Brand[] = [
   { id: 'bottega', name: 'Bottega Veneta', origin: 'İtalya · 1966', scores: { quality: 4.8, fit: 4.2, fabric: 4.9, price: 1.4 }, leftPct: 5, reviewCount: 211, url: 'https://www.bottegaveneta.com/', styleIds: ['sessiz-luks', 'minimal'] },
   { id: 'balenciaga', name: 'Balenciaga', origin: 'İspanya · 1919', scores: { quality: 4.1, fit: 3.6, fabric: 4.0, price: 1.5 }, leftPct: 19, reviewCount: 356, url: 'https://www.balenciaga.com/' },
   { id: 'miumiu', name: 'Miu Miu', origin: 'İtalya · 1993', scores: { quality: 4.3, fit: 3.9, fabric: 4.2, price: 1.7 }, leftPct: 6, reviewCount: 402, url: 'https://www.miumiu.com/', styleIds: ['coquette', 'y2k'] },
+  { id: 'emporio-armani', name: 'Emporio Armani', origin: 'İtalya · 1981', scores: { quality: 4.2, fit: 4.0, fabric: 4.1, price: 2.3 }, leftPct: 10, reviewCount: 186, url: 'https://www.armani.com/', styleIds: ['minimal', '2011-glam'] },
   { id: 'prada', name: 'Prada', origin: 'İtalya · 1913', scores: { quality: 4.5, fit: 4.0, fabric: 4.6, price: 1.6 }, leftPct: 8, reviewCount: 377, url: 'https://www.prada.com/', styleIds: ['minimal', 'sessiz-luks'] },
 ];
 
 export const ITEMS: Item[] = [
   // Hande — Adını Feriha Koydum (2011)
   { id: 'pembe-elbise', type: 'clothing', name: 'Pudra pembe mini elbise', category: 'Elbise', brandName: 'La Mariquita', color: '#E9B4BF', year: '2011', verification: 'ok', note: 'Galata Kuledibi’ndeki butiğin tasarımı; 2011’de hayran blogunda tespit edildi.', searchQuery: 'pudra pembe mini elbise', ownedCount: 1240, styleIds: ['2011-glam', 'coquette'] },
-  { id: 'deri-ceket', type: 'clothing', name: 'Taba deri ceket', category: 'Ceket', brandName: 'Emporio Armani', color: '#B8742F', year: '2011', verification: 'ok', note: 'Hayran blogu 1. bölümde Emporio Armani olarak kaydetti. Dizi 2011’de çekildiği için 2010–11 sezonu.', searchQuery: 'taba deri biker ceket kadın', ownedCount: 3410, styleIds: ['2011-glam', 'western'] },
+  { id: 'deri-ceket', type: 'clothing', name: 'Taba deri ceket', category: 'Ceket', brandName: 'Emporio Armani', brandId: 'emporio-armani', color: '#B8742F', year: '2011', verification: 'ok', note: 'Hayran blogu 1. bölümde Emporio Armani olarak kaydetti. Dizi 2011’de çekildiği için 2010–11 sezonu.', searchQuery: 'taba deri biker ceket kadın', ownedCount: 3410, styleIds: ['2011-glam', 'western'] },
   { id: 'kahve-canta', type: 'clothing', name: 'Kahverengi omuz çantası', category: 'Çanta', brandName: 'Prada', brandId: 'prada', color: '#4A2E22', year: '2011', verification: 'ok', note: 'Aynı sahnede ceket Emporio Armani, çanta Prada; sonraki bölümlerde Miu Miu ile dönüşümlü.', searchQuery: 'kahverengi deri omuz çantası', ownedCount: 2890, styleIds: ['2011-glam', 'old-money'] },
   { id: 'yesil-ceket', type: 'clothing', name: 'Yeşil kuşaklı ceket', category: 'Ceket', color: '#4E5A3A', year: '2011', verification: 'none', searchQuery: 'yeşil kuşaklı kısa kollu ceket', ownedCount: 610, styleIds: ['2011-glam'] },
   { id: 'kadife-elbise', type: 'clothing', name: 'Mavi mini elbise', category: 'Elbise', brandName: 'Forever New', color: '#2244B8', year: '2011', verification: 'guess', note: '2011’de hayran bloglarında markası en çok sorulan Hande parçası; Forever New olduğu tahmin edildi, doğrulanamadı.', searchQuery: 'saks mavi mini elbise', ownedCount: 860, styleIds: ['2011-glam'] },
@@ -62,6 +63,7 @@ export const SHOWS: Show[] = [
   { id: 'balenciaga-ss26', brandId: 'balenciaga', brandName: 'Balenciaga', season: 'İlkbahar/Yaz 2026', city: 'Paris', when: 'Ekim 2025', designer: 'Pierpaolo Piccioli', tagline: 'Piccioli’nin ilk Balenciaga’sı.', reviewCount: 1210, avg: 3.6 },
   { id: 'miumiu-ss26', brandId: 'miumiu', brandName: 'Miu Miu', season: 'İlkbahar/Yaz 2026', city: 'Paris', when: 'Ekim 2025', designer: 'Miuccia Prada', reviewCount: 1530, avg: 4.2, styleIds: ['coquette'] },
   { id: 'prada-ss26', brandId: 'prada', brandName: 'Prada', season: 'İlkbahar/Yaz 2026', city: 'Milano', when: 'Eylül 2025', designer: 'Miuccia Prada & Raf Simons', reviewCount: 1105, avg: 3.8, styleIds: ['minimal'] },
+  { id: 'emporio-armani-ss11', brandId: 'emporio-armani', brandName: 'Emporio Armani', season: 'İlkbahar/Yaz 2011', city: 'Milano', when: 'Eylül 2010', designer: 'Giorgio Armani', tagline: 'Hande’nin deri ceketinin sezonu.', note: 'Adını Feriha Koydum 2011’de çekildi; hayran blogları Hande’nin taba deri ceketini Emporio Armani olarak kaydetti. Bu koleksiyondan olması tahmin.', url: 'https://www.armani.com/', reviewCount: 212, avg: 3.9, styleIds: ['2011-glam', 'minimal'] },
   { id: 'chanel-fw26', brandId: 'chanel', brandName: 'Chanel', season: 'Sonbahar/Kış 2026', city: 'Paris', when: 'Mart 2026', designer: 'Matthieu Blazy', tagline: 'İkinci koleksiyon: ilk kıştan sonra ne?', reviewCount: 640, avg: 4.0, styleIds: ['sessiz-luks'] },
 ];
 
@@ -150,15 +152,15 @@ const P: Record<string, Partial<ShelfEntry>> = {
   'selin:l-flap': { store: 'Vestiaire Collective (ikinci el)', priceText: '2019 üretim, 4.100 €' },
   'selin:coco-mademoiselle': { store: 'Chanel, Nişantaşı', priceText: '9.800 TL' },
 };
-const sh = (userId: string, itemId: string, shelf: 'owned' | 'want', createdAt: number): ShelfEntry => ({ userId, itemId, shelf, createdAt, ...(P[userId + ':' + itemId] ?? {}) });
+const sh = (userId: string, itemId: string, shelf: 'showcase' | 'saved', createdAt: number): ShelfEntry => ({ userId, itemId, shelf, createdAt, ...(P[userId + ':' + itemId] ?? {}) });
 
 export const SHELVES: ShelfEntry[] = [
-  ...['deri-ceket', 'kahve-canta', 'gri-etek', 'pembe-elbise', 'fume-palto', 'mavi-katkat', 'flowerbomb', 'l-trench', 'l-lip', 'l-spf', 'kasmir-kazak'].map((itemId, i) => sh('melis', itemId, 'owned', NOW - (20 + i * 30) * H)),
-  sh('melis', 'l-flap', 'want', NOW - 5 * H),
-  ...['deri-ceket', 'mavi-katkat', 'kalp-tshirt', 'siyah-gece', 'coco-mademoiselle', 'l-jean', 'l-spf'].map((itemId, i) => sh('ece', itemId, 'owned', NOW - (9 + i * 40) * H)),
-  sh('ece', 'l-loafer', 'want', NOW - 2 * H),
-  ...['pembe-elbise', 'sari-sort', 'flowerbomb', 'l-jean', 'l-loafer', 'l-gozluk', 'maxi-etek'].map((itemId, i) => sh('zeynep', itemId, 'owned', NOW - (30 + i * 50) * H)),
-  ...['l-flap', 'coco-mademoiselle', 'fume-palto'].map((itemId, i) => sh('selin', itemId, 'owned', NOW - (60 + i * 70) * H)),
+  ...['deri-ceket', 'kahve-canta', 'gri-etek', 'pembe-elbise', 'fume-palto', 'mavi-katkat', 'flowerbomb', 'l-trench', 'l-lip', 'l-spf', 'kasmir-kazak'].map((itemId, i) => sh('melis', itemId, 'showcase', NOW - (20 + i * 30) * H)),
+  sh('melis', 'l-flap', 'saved', NOW - 5 * H),
+  ...['deri-ceket', 'mavi-katkat', 'kalp-tshirt', 'siyah-gece', 'coco-mademoiselle', 'l-jean', 'l-spf'].map((itemId, i) => sh('ece', itemId, 'showcase', NOW - (9 + i * 40) * H)),
+  sh('ece', 'l-loafer', 'saved', NOW - 2 * H),
+  ...['pembe-elbise', 'sari-sort', 'flowerbomb', 'l-jean', 'l-loafer', 'l-gozluk', 'maxi-etek'].map((itemId, i) => sh('zeynep', itemId, 'showcase', NOW - (30 + i * 50) * H)),
+  ...['l-flap', 'coco-mademoiselle', 'fume-palto'].map((itemId, i) => sh('selin', itemId, 'showcase', NOW - (60 + i * 70) * H)),
 ];
 
 export const REVIEWS: Review[] = [

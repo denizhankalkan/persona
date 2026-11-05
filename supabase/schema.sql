@@ -88,6 +88,8 @@ create table if not exists profiles (
   visibility text not null default 'followers' check (visibility in ('public','followers','private')),
   -- up to 4 signature pieces (item ids)
   signature text[] not null default '{}',
+  -- UI language override (null = device)
+  lang text check (lang in ('tr','en','fr','ru')),
   created_at timestamptz default now()
 );
 
@@ -103,7 +105,7 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
 create table if not exists shelves (
   user_id uuid references profiles(id) on delete cascade,
   item_id text references items(id) on delete cascade,
-  shelf text not null check (shelf in ('owned','want')),
+  shelf text not null check (shelf in ('showcase','saved')),
   -- "nereden aldım": the part people usually hide
   store text,
   price_text text,
@@ -225,6 +227,24 @@ create table if not exists list_items (
   primary key (list_id, item_id)
 );
 
+-- runway frames users attach to a show (the official page's image is read live; these are extra looks)
+create table if not exists show_looks (
+  user_id uuid references profiles(id) on delete cascade,
+  show_id text not null,
+  position int not null default 0,
+  url text not null,
+  created_at timestamptz default now(),
+  primary key (user_id, show_id, position)
+);
+
+-- "which series, which character?" requests from the Ekranda tab
+create table if not exists suggestions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references profiles(id) on delete cascade,
+  text text not null,
+  created_at timestamptz default now()
+);
+
 create table if not exists brand_tips (
   user_id uuid references profiles(id) on delete cascade,
   item_id text references items(id) on delete cascade,
@@ -253,6 +273,8 @@ alter table user_items enable row level security;
 alter table lists enable row level security;
 alter table list_items enable row level security;
 alter table list_saves enable row level security;
+alter table suggestions enable row level security;
+alter table show_looks enable row level security;
 alter table item_photos enable row level security;
 alter table item_links enable row level security;
 
@@ -304,8 +326,8 @@ create policy "links own" on item_links for all using (auth.uid() = user_id) wit
 -- ---------- derived counts (kept simple: recomputed by triggers) ----------
 create or replace function bump_owned_count() returns trigger language plpgsql as $$
 begin
-  if (tg_op = 'INSERT' and new.shelf = 'owned') then update items set owned_count = owned_count + 1 where id = new.item_id; end if;
-  if (tg_op = 'DELETE' and old.shelf = 'owned') then update items set owned_count = greatest(owned_count - 1, 0) where id = old.item_id; end if;
+  if (tg_op = 'INSERT' and new.shelf = 'showcase') then update items set owned_count = owned_count + 1 where id = new.item_id; end if;
+  if (tg_op = 'DELETE' and old.shelf = 'showcase') then update items set owned_count = greatest(owned_count - 1, 0) where id = old.item_id; end if;
   return null;
 end $$;
 drop trigger if exists shelves_count on shelves;
@@ -338,3 +360,7 @@ drop policy if exists list_items_write on list_items; create policy list_items_w
   with check (exists (select 1 from lists l where l.id = list_id and l.author_id = auth.uid()));
 drop policy if exists list_saves_read on list_saves; create policy list_saves_read on list_saves for select using (true);
 drop policy if exists list_saves_write on list_saves; create policy list_saves_write on list_saves for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists suggestions_write on suggestions; create policy suggestions_write on suggestions for insert with check (auth.uid() = user_id);
+drop policy if exists suggestions_read on suggestions; create policy suggestions_read on suggestions for select using (auth.uid() = user_id);
+drop policy if exists show_looks_read on show_looks; create policy show_looks_read on show_looks for select using (true);
+drop policy if exists show_looks_write on show_looks; create policy show_looks_write on show_looks for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

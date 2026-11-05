@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
 import { unfurlImage } from '@/unfurl';
+import { useT } from '@/i18n';
 import type { Item } from '@/data/types';
 
 /**
@@ -14,6 +15,7 @@ import type { Item } from '@/data/types';
 export function Photo({ id, url, imageUrl, label, sub, ratio = 0.8, style, size = 18 }: { id: string; url?: string; imageUrl?: string; label: string; sub?: string; ratio?: number; style?: any; size?: number }) {
   const { c, f } = useTheme();
   const { me } = useStore();
+  const { t } = useT();
   const own = me.photos?.[id];
   const link = me.links?.[id] ?? url;
   const canUnfurl = Platform.OS !== 'web' || Boolean(process.env.EXPO_PUBLIC_UNFURL_URL);
@@ -36,7 +38,7 @@ export function Photo({ id, url, imageUrl, label, sub, ratio = 0.8, style, size 
       ) : (
         <View style={{ alignItems: 'center', gap: 4, padding: size >= 11 ? 12 : 4 }}>
           {size >= 10 ? <Text style={{ fontFamily: f.display, fontSize: size, color: c.fg, textAlign: 'center', letterSpacing: 1 }}>{label}</Text> : null}
-          {size >= 11 ? <Text style={{ fontFamily: f.bodyBold, fontSize: 9, letterSpacing: 1.2, textTransform: 'uppercase', color: c.muted, textAlign: 'center' }}>{sub ?? (loading ? 'yükleniyor' : failed ? 'fotoğraf yüklenemedi' : link ? 'resmi sayfadan' : 'fotoğraf yok')}</Text> : null}
+          {size >= 11 ? <Text style={{ fontFamily: f.bodyBold, fontSize: 9, letterSpacing: 1.2, textTransform: 'uppercase', color: c.muted, textAlign: 'center' }}>{sub ?? t(loading ? 'yükleniyor' : failed ? 'fotoğraf yüklenemedi' : link ? 'resmi sayfadan' : 'fotoğraf yok')}</Text> : null}
         </View>
       )}
     </View>

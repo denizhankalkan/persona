@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View, type PressableProps, type TextInputProps, type TextProps, type ViewProps } from 'react-native';
 import { space, useTheme } from '@/theme';
 import { TulipMark, TulipTexture } from './Motif';
+import { useT } from '@/i18n';
 
 /* ---------- typography ---------- */
 export function Display({ size = 'lg', italic, style, ...p }: TextProps & { size?: 'xxl' | 'xl' | 'lg' | 'md' | 'sm'; italic?: boolean }) {
@@ -122,10 +123,11 @@ export function Stars({ value, size = 13, color }: { value: number; size?: numbe
 }
 export function StarPicker({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   const { c } = useTheme();
+  const { t } = useT();
   return (
     <View style={{ flexDirection: 'row', gap: 6 }}>
       {[1, 2, 3, 4, 5].map((n) => (
-        <Pressable key={n} onPress={() => onChange(n)} accessibilityLabel={`${n} yıldız`} style={{ width: 40, height: 40, borderWidth: 1, borderColor: n <= value ? c.fg : c.line, backgroundColor: n <= value ? c.ink : c.surface, alignItems: 'center', justifyContent: 'center' }}>
+        <Pressable key={n} onPress={() => onChange(n)} accessibilityLabel={t('{n} yıldız', { n })} style={{ width: 40, height: 40, borderWidth: 1, borderColor: n <= value ? c.fg : c.line, backgroundColor: n <= value ? c.ink : c.surface, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontSize: 18, color: n <= value ? c.inkFg : c.line }}>★</Text>
         </Pressable>
       ))}

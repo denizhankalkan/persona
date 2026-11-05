@@ -4,6 +4,7 @@ import { Button, Chip, Eyebrow, Field, Small, StarPicker } from './ui';
 import { useStore, type SubjectRef } from '@/store';
 import { BRAND_STATUS_LABEL } from '@/data/repo';
 import { STARRED, type BrandStatus } from '@/data/types';
+import { useT } from '@/i18n';
 
 const PLACEHOLDER: Record<SubjectRef['kind'], string> = {
   item: 'İki satır yeter: nasıl oturdu, nerede giydin, tekrar alır mıydın?',
@@ -16,6 +17,7 @@ const PLACEHOLDER: Record<SubjectRef['kind'], string> = {
 /** Goodreads-style: stars + a couple of lines. Discussion happens under the review. */
 export function ReviewForm({ subject, onDone }: { subject: SubjectRef; onDone?: () => void }) {
   const { addReview } = useStore();
+  const { t } = useT();
   const [rating, setRating] = useState(0);
   const [body, setBody] = useState('');
   const [status, setStatus] = useState<BrandStatus | undefined>();
@@ -30,16 +32,16 @@ export function ReviewForm({ subject, onDone }: { subject: SubjectRef; onDone?: 
   };
   return (
     <View style={{ gap: 10 }}>
-      <Eyebrow>{stars ? 'Sen ne düşünüyorsun?' : 'Tartışmaya katıl'}</Eyebrow>
+      <Eyebrow>{t(stars ? 'Sen ne düşünüyorsun?' : 'Tartışmaya katıl')}</Eyebrow>
       {stars ? <StarPicker value={rating} onChange={setRating} /> : null}
       {subject.kind === 'brand' ? (
         <View style={{ flexDirection: 'row', gap: 6 }}>
-          {(Object.keys(BRAND_STATUS_LABEL) as BrandStatus[]).map((s) => <Chip key={s} label={BRAND_STATUS_LABEL[s]} on={status === s} onPress={() => setStatus(status === s ? undefined : s)} />)}
+          {(Object.keys(BRAND_STATUS_LABEL) as BrandStatus[]).map((s) => <Chip key={s} label={t(BRAND_STATUS_LABEL[s])} on={status === s} onPress={() => setStatus(status === s ? undefined : s)} />)}
         </View>
       ) : null}
-      <Field multiline value={body} onChangeText={setBody} maxLength={600} placeholder={PLACEHOLDER[subject.kind]} />
-      <Button variant="dark" label={busy ? 'Kaydediliyor…' : stars ? 'Yorumu kaydet' : 'Yaz'} disabled={!ok || busy} onPress={submit} />
-      {!stars ? <Small>Yıldız yalnızca modele ve koleksiyona verilir; {subject.kind === 'brand' ? 'markanın' : subject.kind === 'style' ? 'stilin' : 'listenin'} puanı parçalarından hesaplanır.</Small> : null}
+      <Field multiline value={body} onChangeText={setBody} maxLength={600} placeholder={t(PLACEHOLDER[subject.kind])} />
+      <Button variant="dark" label={t(busy ? 'Kaydediliyor…' : stars ? 'Yorumu kaydet' : 'Yaz')} disabled={!ok || busy} onPress={submit} />
+      {!stars ? <Small>{t('Yıldız yalnızca modele ve koleksiyona verilir; {x} puanı parçalarından hesaplanır.', { x: t(subject.kind === 'brand' ? 'markanın' : subject.kind === 'style' ? 'stilin' : 'listenin') })}</Small> : null}
     </View>
   );
 }

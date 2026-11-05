@@ -1,6 +1,7 @@
 export type ItemType = 'clothing' | 'perfume' | 'product';
 export type Verification = 'ok' | 'guess' | 'none';
-export type Shelf = 'owned' | 'want';
+/** showcase = "vitrine ekle" (I bought it, I show it; "nereden aldım" lives here) · saved = "kaydet" (favorites) */
+export type Shelf = 'showcase' | 'saved';
 export type BrandStatus = 'loyal' | 'sometimes' | 'left';
 
 /**
@@ -40,7 +41,7 @@ export interface Item {
   note?: string;
   notes?: string;
   searchQuery: string;
-  /** community count snapshot */
+  /** community count snapshot: how many showcases hold it */
   ownedCount: number;
   /** official product page; the photo is read from it */
   url?: string;
@@ -68,6 +69,8 @@ export interface Show {
   /** official show page or brand runway page; the photo is read from it */
   url?: string;
   imageUrl?: string;
+  /** number of looks in the show, when known */
+  lookCount?: number;
   reviewCount: number;
   avg: number;
   styleIds?: string[];
@@ -232,5 +235,11 @@ export interface UserData {
   likedReviews: string[];
   /** lists the user saved (Letterboxd's like on a list) */
   savedLists: string[];
+  /** runway frames the user added per show (data URIs locally; Storage URLs with Supabase), in look order */
+  looks?: Record<string, string[]>;
+  /** UI language override; undefined = device language */
+  lang?: 'tr' | 'en' | 'fr' | 'ru';
+  /** series/character suggestions typed in Ekranda (local, until a backend inbox exists) */
+  suggestions?: string[];
   introSeen: boolean;
 }
