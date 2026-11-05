@@ -4,10 +4,13 @@ export type Shelf = 'owned' | 'want';
 export type BrandStatus = 'loyal' | 'sometimes' | 'left';
 
 /**
- * Everything that can be rated and reviewed, Letterboxd-style. A person is never a
- * subject: wardrobes of real users get likes and comments on pieces, not a score.
+ * Letterboxd's film is our model. Stars go to two works only: a piece (a specific model,
+ * "Sézane Clyde trençkot") and a collection (a show, "Chanel İlkbahar/Yaz 2026").
+ * Brand, style and list pages exist and are discussed, but their score is computed from
+ * the pieces; a person is never a subject.
  */
 export type SubjectKind = 'item' | 'brand' | 'show' | 'style' | 'list';
+export const STARRED: SubjectKind[] = ['item', 'show'];
 
 export interface Brand {
   id: string;
@@ -171,6 +174,7 @@ export interface Review {
   userId: string;
   targetType: SubjectKind;
   targetId: string;
+  /** 1–5 for a model or a collection; 0 = a discussion post on a brand, style or list (those are not starred) */
   rating: number;
   body: string;
   brandStatus?: BrandStatus;
@@ -226,5 +230,7 @@ export interface UserData {
   /** the user's own lists */
   lists: List[];
   likedReviews: string[];
+  /** lists the user saved (Letterboxd's like on a list) */
+  savedLists: string[];
   introSeen: boolean;
 }

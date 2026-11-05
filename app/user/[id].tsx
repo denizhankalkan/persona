@@ -31,7 +31,7 @@ export default function UserScreen() {
   const stores = storesOf(u.id);
   const withStore = entries.filter((s) => s.shelf === 'owned' && s.store);
   const sig = acc === 'open' ? signatureOf(u.id) : [];
-  const followLabel = st === 'accepted' ? 'Takiptesin ✓' : st === 'pending' ? 'İstek gönderildi…' : u.visibility === 'public' ? 'Takip et' : 'Takip isteği gönder';
+  const followLabel = st === 'accepted' ? (u.visibility === 'public' ? 'Takiptesin ✓' : 'Arkadaşsınız ✓') : st === 'pending' ? 'İstek gönderildi…' : u.visibility === 'public' ? 'Takip et' : 'Arkadaş ol';
   const open = acc === 'open';
   return (
     <>
@@ -57,8 +57,8 @@ export default function UserScreen() {
 
         {acc === 'locked' || acc === 'pending' ? (
           <Card style={{ gap: 6 }}>
-            <Display size="md">Dolabı takipçilerine açık.</Display>
-            <Body muted>{acc === 'pending' ? `${u.name} isteğini onayladığında raflarını ve nereden aldıklarını göreceksin.` : `${u.name} dolabını yalnızca onayladığı kişilere gösteriyor. İstek gönder; kabul ederse raflarını ve nereden aldıklarını görürsün.`}</Body>
+            <Display size="md">Dolabı arkadaşlarına açık.</Display>
+            <Body muted>{acc === 'pending' ? `${u.name} isteğini onayladığında aldıklarını model model, nereden aldığıyla göreceksin.` : `${u.name} dolabını yalnızca onayladığı arkadaşlarına gösteriyor. İstek gönder; kabul ederse aldıklarını model model, nereden aldığıyla görürsün.`}</Body>
           </Card>
         ) : acc === 'private' ? (
           <Card style={{ gap: 6 }}>

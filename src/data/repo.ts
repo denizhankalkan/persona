@@ -49,11 +49,13 @@ export interface Repo {
   addItem(item: NewItem): Promise<Item>;
   addList(l: Pick<List, 'title' | 'description' | 'itemIds'>): Promise<List>;
   toggleListItem(listId: string, itemId: string): Promise<void>;
+  /** save / unsave someone's list. Returns the new state. */
+  toggleSaveList(listId: string): Promise<boolean>;
 }
 
 export const emptyUserData = (): UserData => ({
   profile: { name: 'Sen', handle: '@sen', bio: '', visibility: 'followers', signature: [] },
-  shelves: [], reviews: [], comments: [], follows: [], followers: [], personaFollows: [], brandTips: {}, photos: {}, links: {}, items: [], lists: [], likedReviews: [], introSeen: false,
+  shelves: [], reviews: [], comments: [], follows: [], followers: [], personaFollows: [], brandTips: {}, photos: {}, links: {}, items: [], lists: [], likedReviews: [], savedLists: [], introSeen: false,
 });
 
 const KEY = 'persona.userdata.v3';
@@ -79,6 +81,7 @@ export class LocalRepo implements Repo {
       this.me.followers = [{ followerId: 'selin', followeeId: ME_ID, status: 'pending' }];
     }
     if (!this.me.profile.signature) this.me.profile.signature = [];
+    if (!this.me.savedLists) this.me.savedLists = [];
     return {
       brands: BRANDS, items: ITEMS, shows: SHOWS, styles: STYLES, lists: LISTS, personas: PERSONAS, scenes: SCENES, users: USERS,
       shelves: SHELVES, reviews: REVIEWS, comments: COMMENTS, follows: FOLLOWS, personaFollows: PERSONA_FOLLOWS,
@@ -188,6 +191,12 @@ export class LocalRepo implements Repo {
   async toggleListItem(listId: string, itemId: string) {
     this.me.lists = this.me.lists.map((l) => (l.id === listId ? { ...l, itemIds: l.itemIds.includes(itemId) ? l.itemIds.filter((x) => x !== itemId) : [...l.itemIds, itemId] } : l));
     await this.persist();
+  }
+  async toggleSaveList(listId: string) {
+    const on = this.me.savedLists.includes(listId);
+    this.me.savedLists = on ? this.me.savedLists.filter((x) => x !== listId) : [...this.me.savedLists, listId];
+    await this.persist();
+    return !on;
   }
 }
 

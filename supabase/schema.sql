@@ -119,7 +119,8 @@ create table if not exists reviews (
   user_id uuid references profiles(id) on delete cascade,
   target_type text not null check (target_type in ('item','brand','show','style','list')),
   target_id text not null,
-  rating int not null check (rating between 1 and 5),
+  -- 1–5 for a piece or a show; 0 = discussion post on a brand, style or list (not starred)
+  rating int not null check (rating between 0 and 5),
   body text default '',
   brand_status text check (brand_status in ('loyal','sometimes','left')),
   tags text[] default '{}',
@@ -210,6 +211,12 @@ create table if not exists lists (
   saves int not null default 0,
   created_at timestamptz default now()
 );
+create table if not exists list_saves (
+  user_id uuid references profiles(id) on delete cascade,
+  list_id text references lists(id) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, list_id)
+);
 create table if not exists list_items (
   list_id text references lists(id) on delete cascade,
   item_id text not null,
@@ -245,6 +252,7 @@ alter table review_likes enable row level security;
 alter table user_items enable row level security;
 alter table lists enable row level security;
 alter table list_items enable row level security;
+alter table list_saves enable row level security;
 alter table item_photos enable row level security;
 alter table item_links enable row level security;
 
@@ -328,3 +336,5 @@ drop policy if exists list_items_read on list_items; create policy list_items_re
 drop policy if exists list_items_write on list_items; create policy list_items_write on list_items for all
   using (exists (select 1 from lists l where l.id = list_id and l.author_id = auth.uid()))
   with check (exists (select 1 from lists l where l.id = list_id and l.author_id = auth.uid()));
+drop policy if exists list_saves_read on list_saves; create policy list_saves_read on list_saves for select using (true);
+drop policy if exists list_saves_write on list_saves; create policy list_saves_write on list_saves for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

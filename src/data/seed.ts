@@ -173,10 +173,10 @@ export const REVIEWS: Review[] = [
   { id: 'r15', userId: 'melis', targetType: 'item', targetId: 'l-flap', rating: 4, body: 'İstiyorum rafımda bir yıldır duruyor. Zam gelmeden mi, ikinci el mi? Bunu tartışalım.', createdAt: NOW - 1 * H, likes: 3 },
   { id: 'r16', userId: 'zeynep', targetType: 'item', targetId: 'maxi-etek', rating: 3, body: 'Güzel ama bu yaz sokakta beş kişide gördüm. Seneye giyer miyim, emin değilim.', createdAt: NOW - 11 * H, likes: 6 },
   // brands
-  { id: 'b1', userId: 'melis', targetType: 'brand', targetId: 'zara', rating: 2, brandStatus: 'left', body: 'Kalıpları hâlâ en iyisi ama üç yıkamada her şey boncuklanıyor. Etiketi çevir: polyester.', createdAt: NOW - 24 * H, likes: 23 },
-  { id: 'b2', userId: 'ece', targetType: 'brand', targetId: 'mango', rating: 4, brandStatus: 'loyal', body: 'Deri ve yün parçaları Zara’nın iki katı dayanıyor. Basic’leri almayın, dış giyimi alın.', createdAt: NOW - 40 * H, likes: 15 },
-  { id: 'b3', userId: 'selin', targetType: 'brand', targetId: 'chanel', rating: 4, brandStatus: 'sometimes', body: 'Çanta ve parfüm beş yıldız; hazır giyim fiyatı artık savunulamaz. İkinci el şart oldu.', createdAt: NOW - 200 * H, likes: 27 },
-  { id: 'b4', userId: 'zeynep', targetType: 'brand', targetId: 'massimo', rating: 5, brandStatus: 'loyal', body: 'Sessiz lüksün ulaşılabilir hâli. Loafer ve trençkot için başka yere bakmıyorum.', createdAt: NOW - 150 * H, likes: 11 },
+  { id: 'b1', userId: 'melis', targetType: 'brand', targetId: 'zara', rating: 0, brandStatus: 'left', body: 'Kalıpları hâlâ en iyisi ama üç yıkamada her şey boncuklanıyor. Etiketi çevir: polyester.', createdAt: NOW - 24 * H, likes: 23 },
+  { id: 'b2', userId: 'ece', targetType: 'brand', targetId: 'mango', rating: 0, brandStatus: 'loyal', body: 'Deri ve yün parçaları Zara’nın iki katı dayanıyor. Basic’leri almayın, dış giyimi alın.', createdAt: NOW - 40 * H, likes: 15 },
+  { id: 'b3', userId: 'selin', targetType: 'brand', targetId: 'chanel', rating: 0, brandStatus: 'sometimes', body: 'Çanta ve parfüm beş yıldız; hazır giyim fiyatı artık savunulamaz. İkinci el şart oldu.', createdAt: NOW - 200 * H, likes: 27 },
+  { id: 'b4', userId: 'zeynep', targetType: 'brand', targetId: 'massimo', rating: 0, brandStatus: 'loyal', body: 'Sessiz lüksün ulaşılabilir hâli. Loafer ve trençkot için başka yere bakmıyorum.', createdAt: NOW - 150 * H, likes: 11 },
   // shows
   { id: 's1', userId: 'selin', targetType: 'show', targetId: 'chanel-ss26', rating: 5, body: 'Blazy Chanel’i sokağa indirdi: tüvit var ama kostüm yok. Lagerfeld sonrası ilk kez “bunu giyerim” dedim.', createdAt: NOW - 700 * H, likes: 58 },
   { id: 's2', userId: 'zeynep', targetType: 'show', targetId: 'chanel-ss26', rating: 4, body: 'Güzel, akıllı, satılabilir. Beklediğim kadar cesur değil; ikinci koleksiyonu bekliyorum.', createdAt: NOW - 690 * H, likes: 19 },
@@ -184,15 +184,15 @@ export const REVIEWS: Review[] = [
   { id: 's4', userId: 'melis', targetType: 'show', targetId: 'miumiu-ss26', rating: 4, body: 'Miuccia her sezon aynı kızı yeniden kuruyor ve ben her sezon o kız olmak istiyorum.', createdAt: NOW - 705 * H, likes: 34 },
   { id: 's5', userId: 'selin', targetType: 'show', targetId: 'bottega-ss26', rating: 4, body: 'Trotter deriyi Blazy kadar iyi anlıyor. Sessiz ama kendinden emin bir başlangıç.', createdAt: NOW - 1200 * H, likes: 13 },
   // styles
-  { id: 'st1', userId: 'zeynep', targetType: 'style', targetId: 'boho', rating: 2, body: 'Chloé podyumda güzeldi; sokakta herkes aynı dantel eteği giyince bitti. Trend, stil değil.', createdAt: NOW - 36 * H, likes: 41 },
-  { id: 'st2', userId: 'melis', targetType: 'style', targetId: 'sessiz-luks', rating: 4, body: 'Dolabımı küçülttü, harcamamı büyüttü. Kaşmir bir kere alınıyor ama bir kere 9 bin.', createdAt: NOW - 60 * H, likes: 29 },
-  { id: 'st3', userId: 'ece', targetType: 'style', targetId: 'western', rating: 3, body: 'Bot tek başına harika. Bot + püskül + kemer = kostüm partisi.', createdAt: NOW - 80 * H, likes: 8 },
-  { id: 'st4', userId: 'selin', targetType: 'style', targetId: 'old-money', rating: 2, body: 'Zengin görünmek için giyinmek, zengin olmamanın en pahalı yolu.', createdAt: NOW - 100 * H, likes: 63 },
-  { id: 'st5', userId: 'melis', targetType: 'style', targetId: '2011-glam', rating: 4, body: 'Hande’nin dolabı tam olarak bu. Bugün giysem kostüm, 2011’de giysem hayat.', createdAt: NOW - 20 * H, likes: 17 },
+  { id: 'st1', userId: 'zeynep', targetType: 'style', targetId: 'boho', rating: 0, body: 'Chloé podyumda güzeldi; sokakta herkes aynı dantel eteği giyince bitti. Trend, stil değil.', createdAt: NOW - 36 * H, likes: 41 },
+  { id: 'st2', userId: 'melis', targetType: 'style', targetId: 'sessiz-luks', rating: 0, body: 'Dolabımı küçülttü, harcamamı büyüttü. Kaşmir bir kere alınıyor ama bir kere 9 bin.', createdAt: NOW - 60 * H, likes: 29 },
+  { id: 'st3', userId: 'ece', targetType: 'style', targetId: 'western', rating: 0, body: 'Bot tek başına harika. Bot + püskül + kemer = kostüm partisi.', createdAt: NOW - 80 * H, likes: 8 },
+  { id: 'st4', userId: 'selin', targetType: 'style', targetId: 'old-money', rating: 0, body: 'Zengin görünmek için giyinmek, zengin olmamanın en pahalı yolu.', createdAt: NOW - 100 * H, likes: 63 },
+  { id: 'st5', userId: 'melis', targetType: 'style', targetId: '2011-glam', rating: 0, body: 'Hande’nin dolabı tam olarak bu. Bugün giysem kostüm, 2011’de giysem hayat.', createdAt: NOW - 20 * H, likes: 17 },
   // lists / wardrobes
-  { id: 'l1', userId: 'ece', targetType: 'list', targetId: 'dolap-hande', rating: 5, body: 'Dizinin yarısını bu dolap için izledim. Taba montun markası bulunursa buraya yazın.', createdAt: NOW - 200 * H, likes: 52 },
-  { id: 'l2', userId: 'melis', targetType: 'list', targetId: 'dolap-lara', rating: 4, body: 'Nereden aldığını yazması çok iyi; fiyatlar gerçek. Hepsi bej ama tutarlı.', createdAt: NOW - 50 * H, likes: 14 },
-  { id: 'l3', userId: 'zeynep', targetType: 'list', targetId: 'ilk-maas', rating: 5, body: 'Yirmi yaşımda bunu okusaydım beş yıl kazanırdım.', createdAt: NOW - 40 * H, likes: 21 },
+  { id: 'l1', userId: 'ece', targetType: 'list', targetId: 'dolap-hande', rating: 0, body: 'Dizinin yarısını bu dolap için izledim. Taba montun markası bulunursa buraya yazın.', createdAt: NOW - 200 * H, likes: 52 },
+  { id: 'l2', userId: 'melis', targetType: 'list', targetId: 'dolap-lara', rating: 0, body: 'Nereden aldığını yazması çok iyi; fiyatlar gerçek. Hepsi bej ama tutarlı.', createdAt: NOW - 50 * H, likes: 14 },
+  { id: 'l3', userId: 'zeynep', targetType: 'list', targetId: 'ilk-maas', rating: 0, body: 'Yirmi yaşımda bunu okusaydım beş yıl kazanırdım.', createdAt: NOW - 40 * H, likes: 21 },
 ];
 
 export const COMMENTS: Comment[] = [

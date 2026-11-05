@@ -8,7 +8,7 @@ import { useTheme } from '@/theme';
 
 const BEATS = [
   ['Kaydet', 'Giydiğine “bende” de.', 'Parça, nereden aldın, kaça. Fotoğraf çekmek yok; resmi ürün linki yeter. İzin verdiğin kadar görünür.'],
-  ['Puanla', 'Parça, marka, defile, stil.', 'Goodreads gibi beş yıldız ve iki satır. Chanel’in son koleksiyonu, Zara’nın kumaşı, boho’nun dönüşü: hepsi tartışılır.'],
+  ['Puanla', 'Modele ve koleksiyona yıldız.', 'Letterboxd’da film ne ise bizde model o: Sézane’ın trençkotu, Chanel’in son koleksiyonu. Marka ve stil sayfaları parçalardan hesaplanır, tartışılır.'],
   ['Takip et', 'O kadın ne alıyor?', 'Dizi karakteri, herkese açık persona ya da takip ettiğin biri: dolabı, nereden aldığı, ne düşündüğü. Kıyas yok, algoritma yok.'],
   ['Konuş', 'Beğendin. Kimle konuşacaksın?', 'Her yorumun altında tartışma. Konuşma bir parçaya, markaya ya da listeye bağlıdır; kaybolmaz, aranır.'],
 ];

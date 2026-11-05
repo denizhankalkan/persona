@@ -109,7 +109,7 @@ export default function ItemScreen() {
         ) : null}
 
         {(purchases.length || personaPurchases.length) ? (
-          <Section title="Nereden aldılar?" right={<Small>izin verdikleri kadar</Small>}>
+          <Section title="Nereden aldılar?" ornament right={<Small>izin verdikleri kadar</Small>}>
             <View>
               {personaPurchases.map(({ p, pu }) => (
                 <Pressable key={p.id} onPress={() => router.push(`/liste/dolap-${p.id}`)} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderBottomColor: c.line, paddingVertical: 10 }}>

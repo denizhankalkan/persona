@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View, type PressableProps, type TextInputProps, type TextProps, type ViewProps } from 'react-native';
 import { space, useTheme } from '@/theme';
+import { TulipMark, TulipTexture } from './Motif';
 
 /* ---------- typography ---------- */
 export function Display({ size = 'lg', italic, style, ...p }: TextProps & { size?: 'xxl' | 'xl' | 'lg' | 'md' | 'sm'; italic?: boolean }) {
@@ -23,10 +24,15 @@ export function Eyebrow({ color, style, ...p }: TextProps & { color?: string }) 
   const { c, f } = useTheme();
   return <Text {...p} style={[{ fontFamily: f.bodyBold, fontSize: 10, lineHeight: 14, letterSpacing: 2, textTransform: 'uppercase', color: color ?? c.muted }, style]} />;
 }
-/** the wordmark, used as a small masthead on root screens */
-export function Masthead({ size = 16, style }: { size?: number; style?: TextProps['style'] }) {
+/** the wordmark on a black band with the tulip texture: the masthead of every root screen */
+export function Masthead({ size = 16, style, bleed = 16, top = 0 }: { size?: number; style?: ViewProps['style']; bleed?: number; top?: number }) {
   const { c, f } = useTheme();
-  return <Text accessibilityRole="header" style={[{ fontFamily: f.display, fontSize: size, lineHeight: size * 1.1, letterSpacing: size * 0.38, textTransform: 'uppercase', color: c.fg, textAlign: 'center' }, style]}>Persona</Text>;
+  return (
+    <View style={[{ backgroundColor: '#0B0B0B', marginHorizontal: -bleed, paddingTop: top + 14, paddingBottom: 12, borderBottomWidth: 2, borderBottomColor: c.accent, overflow: 'hidden' }, style]}>
+      <TulipTexture />
+      <Text accessibilityRole="header" style={{ fontFamily: f.display, fontSize: size, lineHeight: size * 1.1, letterSpacing: size * 0.38, textTransform: 'uppercase', color: '#F3EEE3', textAlign: 'center' }}>Persona</Text>
+    </View>
+  );
 }
 
 /* ---------- surfaces ---------- */
@@ -34,23 +40,27 @@ export function Card({ style, ...p }: ViewProps) {
   const { c } = useTheme();
   return <View {...p} style={[{ backgroundColor: c.surface, borderWidth: 1, borderColor: c.line, padding: space.lg }, style]} />;
 }
-/** black block with a Tiffany hairline on top: hero of a brand / show / list page */
+/** black block with a turquoise hairline on top and the faint tulip texture: hero of a brand / show / list page */
 export function Band({ style, children, ...p }: ViewProps) {
   const { c } = useTheme();
   return (
-    <View {...p} style={[{ backgroundColor: c.ink, padding: 20, borderTopWidth: 3, borderTopColor: c.accent, gap: 10 }, style]}>
+    <View {...p} style={[{ backgroundColor: '#0B0B0B', padding: 20, borderTopWidth: 3, borderTopColor: c.accent, gap: 10, overflow: 'hidden' }, style]}>
+      <TulipTexture opacity={0.22} />
       {children}
     </View>
   );
 }
 /** section head with a hairline rule underneath (Vogue's section rule) */
-export function Section({ title, right, children, style, kicker }: { title?: string; right?: React.ReactNode; children: React.ReactNode; style?: ViewProps['style']; kicker?: boolean }) {
+export function Section({ title, right, children, style, kicker, ornament }: { title?: string; right?: React.ReactNode; children: React.ReactNode; style?: ViewProps['style']; kicker?: boolean; ornament?: boolean }) {
   const { c } = useTheme();
   return (
     <View style={[{ gap: space.md }, style]}>
       {title ? (
         <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, borderBottomWidth: 1, borderBottomColor: c.rule, paddingBottom: 6 }}>
-          {kicker ? <Eyebrow color={c.fg}>{title}</Eyebrow> : <Display size="md">{title}</Display>}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 }}>
+            {kicker ? <Eyebrow color={c.fg}>{title}</Eyebrow> : <Display size="md">{title}</Display>}
+            {ornament ? <TulipMark color={c.fg} /> : null}
+          </View>
           {right}
         </View>
       ) : null}

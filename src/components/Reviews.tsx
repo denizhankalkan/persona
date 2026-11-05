@@ -9,13 +9,14 @@ import { useStore, type SubjectRef } from '@/store';
 export function RatingLine({ subject, size = 15 }: { subject: SubjectRef; size?: number }) {
   const { rating } = useStore();
   const r = rating(subject);
+  const computed = subject.kind === 'brand' || subject.kind === 'style';
   if (!r.n) return <Small>Henüz puan yok.</Small>;
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
       <Stars value={r.avg} size={size} />
       <Small muted={false} weight="semi">{r.avg.toFixed(1)}</Small>
-      <Small>{fmt(r.n)} görüş</Small>
-      <RatingBars dist={r.dist} height={size + 4} />
+      <Small>{fmt(r.n)} görüş{computed ? ' · parçalarından hesaplandı' : ''}</Small>
+      {!computed ? <RatingBars dist={r.dist} height={size + 4} /> : null}
     </View>
   );
 }

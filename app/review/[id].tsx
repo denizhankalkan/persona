@@ -39,7 +39,7 @@ export default function ReviewScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <Avatar name={r.userId === meId ? 'S' : u?.name ?? '?'} size={30} accent={r.userId === meId} />
             <Body weight="semi">{userName(r.userId)}</Body>
-            <Stars value={r.rating} size={15} />
+            {r.rating > 0 ? <Stars value={r.rating} size={15} /> : null}
             {r.brandStatus ? <Tag label={{ loyal: 'Sadığım', sometimes: 'Ara sıra', left: 'Koptum' }[r.brandStatus]} tone="ink" /> : null}
             <Small style={{ marginLeft: 'auto' }}>{timeAgo(r.createdAt)}</Small>
           </View>

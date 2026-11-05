@@ -30,7 +30,7 @@ export function ItemTile({ item, caption, compact }: { item: Item; caption?: str
       <View>
         <ProductImage item={item} ratio={0.8} size={compact ? 13 : 16} />
         {caption ? <View style={{ position: 'absolute', left: 0, top: 0, backgroundColor: 'rgba(255,255,255,.92)', paddingVertical: 3, paddingHorizontal: 6 }}><Text style={{ fontFamily: f.bodyBold, fontSize: 8, letterSpacing: 1, textTransform: 'uppercase', color: '#000' }}>{caption}</Text></View> : null}
-        {shelf ? <View style={{ position: 'absolute', right: 6, top: 6, width: 22, height: 22, borderRadius: 11, backgroundColor: shelf === 'owned' ? c.accent : c.ink, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: shelf === 'owned' ? c.accentInk : c.inkFg, fontSize: 11, fontFamily: f.bodyBold }}>{shelf === 'owned' ? '✓' : '♡'}</Text></View> : null}
+        {shelf ? <View style={{ position: 'absolute', right: 6, bottom: 6, width: 22, height: 22, borderRadius: 11, backgroundColor: shelf === 'owned' ? c.accent : c.ink, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: shelf === 'owned' ? c.accentInk : c.inkFg, fontSize: 11, fontFamily: f.bodyBold }}>{shelf === 'owned' ? '✓' : '♡'}</Text></View> : null}
       </View>
       <Body weight="semi" style={{ fontSize: compact ? 12 : 13, lineHeight: compact ? 15 : 17 }} numberOfLines={2}>{item.name}</Body>
       <Small numberOfLines={1} style={{ fontSize: 11 }}>{item.brandName ?? item.category}{r.n ? ` · ${r.avg.toFixed(1)}` : item.priceText ? ' · ' + item.priceText : ''}</Small>
@@ -93,11 +93,11 @@ export function ItemRow({ item, sub, note }: { item: Item; sub?: string; note?: 
 /* ---------- list card ---------- */
 export function ListCard({ l, wide }: { l: List; wide?: boolean }) {
   const { c } = useTheme();
-  const { item, userName, persona, rating } = useStore();
+  const { item, userName, persona, savesOf, reviewsFor } = useStore();
   const router = useRouter();
   const items = l.itemIds.map(item).filter(Boolean) as Item[];
   const p = l.personaId ? persona(l.personaId) : undefined;
-  const r = rating({ kind: 'list', id: l.id });
+  const talk = reviewsFor({ kind: 'list', id: l.id }).length;
   return (
     <Pressable onPress={() => router.push(`/liste/${l.id}`)} style={{ width: wide ? '100%' : 200, gap: 8 }}>
       <View style={{ flexDirection: 'row', gap: 2 }}>
@@ -110,7 +110,7 @@ export function ListCard({ l, wide }: { l: List; wide?: boolean }) {
           {l.authorId === 'editor' && !p ? <Tag label="Editör" tone="ink" /> : null}
         </View>
         <Display size="sm">{l.title}</Display>
-        <Small>{l.itemIds.length} parça · {l.authorId === 'editor' ? 'Persona' : userName(l.authorId)}{r.n ? ` · ★ ${r.avg.toFixed(1)}` : ''} · {fmt(l.saves)} kayıt</Small>
+        <Small>{l.itemIds.length} parça · {l.authorId === 'editor' ? 'Persona' : userName(l.authorId)} · {fmt(savesOf(l.id))} kayıt{talk ? ` · ${talk} yorum` : ''}</Small>
       </View>
     </Pressable>
   );
@@ -212,7 +212,7 @@ export function ReviewCard({ r, showTarget, compact }: { r: Review; showTarget?:
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <Avatar name={r.userId === meId ? 'S' : u?.name ?? '?'} size={26} accent={r.userId === meId} />
         <Body weight="semi" style={{ fontSize: 14 }}>{userName(r.userId)}</Body>
-        <Stars value={r.rating} />
+        {r.rating > 0 ? <Stars value={r.rating} /> : null}
         {r.brandStatus ? <Tag label={{ loyal: 'Sadığım', sometimes: 'Ara sıra', left: 'Koptum' }[r.brandStatus]} tone={r.brandStatus === 'left' ? 'ink' : 'neutral'} /> : null}
         <Small style={{ marginLeft: 'auto' }}>{timeAgo(r.createdAt)}</Small>
       </View>

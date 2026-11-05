@@ -49,7 +49,7 @@ export default function BrandScreen() {
         </View>
         {!mine ? <Small>Sadığım / ara sıra / koptum: yorumunu yazarken seç.</Small> : null}
 
-        <Section title="Topluluk puanı" kicker>
+        <Section title="Parçalarından hesaplanan puan" kicker>
           <RatingLine subject={subject} />
           {([['Kalıp', b.scores.fit], ['Fiyat', b.scores.price], ['Kalite', b.scores.quality], ['Kumaş', b.scores.fabric]] as [string, number][]).map(([k, v]) => (
             <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -81,7 +81,7 @@ export default function BrandScreen() {
         {url ? <LinkText label={`${b.name} resmi sitesi →`} onPress={() => Linking.openURL(url)} /> : null}
 
         <Reviews subject={subject} title="Tartışma" hint="markayı konuşanlar" />
-        <Body muted style={{ fontSize: 13 }}>Markayı puanlamak kişiyi puanlamak değildir: burada kalıp, kumaş, fiyat ve tutum konuşulur.</Body>
+        <Body muted style={{ fontSize: 13 }}>Markaya yıldız verilmez; puanı parçalarının puanından hesaplanır. Burada kalıp, kumaş, fiyat ve tutum konuşulur.</Body>
       </Screen>
     </>
   );

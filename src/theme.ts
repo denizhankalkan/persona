@@ -1,22 +1,23 @@
 import { useColorScheme } from 'react-native';
 
 /**
- * Vogue.com register: white page, black type, hairline rules, square corners, tracked
- * uppercase labels. One accent only — Pantone 15-5217 TCX "Blue Turquoise" (Tiffany blue),
- * used for links, the active tab, the + button and small kickers.
+ * Siyah · Krem · Turkuaz. Cream paper for pages, black bands for mastheads and the tab bar,
+ * one accent: Pantone 15-5217 TCX "Blue Turquoise" — Tiffany's blue and İznik's turquoise.
+ * Square corners, hairline rules, tracked uppercase labels; the Ottoman touch is a single
+ * motif (tulip and curling vine) drawn faintly on black only. Ratio: cream 80 · black 15 · turquoise 5.
  */
 export const TIFFANY = '#53B0AE';
 
 export const palette = {
   light: {
-    bg: '#FFFFFF', surface: '#FFFFFF', surface2: '#F3F3F3', fg: '#000000', muted: '#6B6B6B', line: '#E4E4E4', rule: '#000000',
-    accent: TIFFANY, accentInk: '#FFFFFF', accentSoft: '#E6F3F2', ink: '#000000', inkFg: '#FFFFFF', inkMuted: '#A3A3A3',
-    gold: '#000000', danger: '#B4473A',
+    bg: '#F3EEE3', surface: '#F3EEE3', surface2: '#EAE3D5', fg: '#0B0B0B', muted: '#6E6A5F', line: '#D9D1C0', rule: '#0B0B0B',
+    accent: TIFFANY, accentInk: '#0B0B0B', accentSoft: '#DCEFEE', ink: '#0B0B0B', inkFg: '#F3EEE3', inkMuted: '#A3A3A3',
+    gold: '#0B0B0B', danger: '#B4473A',
   },
   dark: {
-    bg: '#000000', surface: '#000000', surface2: '#161616', fg: '#FFFFFF', muted: '#9A9A9A', line: '#2A2A2A', rule: '#FFFFFF',
-    accent: '#7CC9C7', accentInk: '#000000', accentSoft: '#12302F', ink: '#FFFFFF', inkFg: '#000000', inkMuted: '#6B6B6B',
-    gold: '#FFFFFF', danger: '#E07A6A',
+    bg: '#0B0B0B', surface: '#0B0B0B', surface2: '#1A1917', fg: '#F3EEE3', muted: '#A39E92', line: '#2A2824', rule: '#F3EEE3',
+    accent: '#6FC4C1', accentInk: '#0B0B0B', accentSoft: '#12302F', ink: '#0B0B0B', inkFg: '#F3EEE3', inkMuted: '#8C877C',
+    gold: '#F3EEE3', danger: '#E07A6A',
   },
 };
 export type Colors = typeof palette.light;

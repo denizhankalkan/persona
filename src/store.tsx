@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { KIND_ROUTE, LocalRepo, ME_ID, type NewItem, type Repo, type ShelfPatch, type Snapshot } from './data/repo';
 import { supabaseEnabled } from './data/supabase';
-import type { Activity, Brand, Comment, Follow, FollowStatus, Item, List, Persona, Review, Shelf, ShelfEntry, Show, Style, SubjectKind, User, UserData, Visibility } from './data/types';
+import { STARRED, type Activity, type Brand, type Comment, type Follow, type FollowStatus, type Item, type List, type Persona, type Review, type Shelf, type ShelfEntry, type Show, type Style, type SubjectKind, type User, type UserData, type Visibility } from './data/types';
 
 export type Access = 'owner' | 'open' | 'pending' | 'locked' | 'private';
 export type SubjectRef = { kind: SubjectKind; id: string };
@@ -79,12 +79,15 @@ type Ctx = {
   addItem: (n: NewItem) => Promise<Item>;
   addList: (l: Pick<List, 'title' | 'description' | 'itemIds'>) => Promise<List>;
   toggleListItem: (listId: string, itemId: string) => Promise<void>;
+  savedList: (listId: string) => boolean;
+  savesOf: (listId: string) => number;
+  toggleSaveList: (listId: string) => Promise<void>;
   reload: () => Promise<void>;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
 
-const emptyMe = (): UserData => ({ profile: { name: 'Sen', handle: '@sen', bio: '', visibility: 'followers', signature: [] }, shelves: [], reviews: [], comments: [], follows: [], followers: [], personaFollows: [], brandTips: {}, photos: {}, links: {}, items: [], lists: [], likedReviews: [], introSeen: false });
+const emptyMe = (): UserData => ({ profile: { name: 'Sen', handle: '@sen', bio: '', visibility: 'followers', signature: [] }, shelves: [], reviews: [], comments: [], follows: [], followers: [], personaFollows: [], brandTips: {}, photos: {}, links: {}, items: [], lists: [], likedReviews: [], savedLists: [], introSeen: false });
 const emptySnap: Snapshot = { brands: [], items: [], shows: [], styles: [], lists: [], personas: [], scenes: [], users: [], shelves: [], reviews: [], comments: [], follows: [], personaFollows: [], me: emptyMe(), meId: ME_ID };
 
 async function makeRepo(): Promise<Repo> {
@@ -162,16 +165,36 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const allReviews = () => [...me.reviews, ...snap.reviews];
     const allComments = () => [...snap.comments, ...me.comments];
     const reviewsFor = (s: SubjectRef) => allReviews().filter((r) => r.targetType === s.kind && r.targetId === s.id).sort((a, b) => b.createdAt - a.createdAt);
+    /**
+     * Stars live on pieces and shows. A brand's or a style's score is computed from its
+     * pieces' reviews (plus the catalog's community snapshot); a list has saves, not stars.
+     */
+    const starred = (s: SubjectRef) => reviewsFor(s).filter((r) => r.rating > 0);
+    const dist5 = (rs: Review[]) => { const d = [0, 0, 0, 0, 0]; rs.forEach((r) => { d[Math.min(5, Math.max(1, Math.round(r.rating))) - 1]++; }); return d; };
     const rating = (s: SubjectRef): Rating => {
-      const rs = reviewsFor(s);
-      const dist = [0, 0, 0, 0, 0];
-      rs.forEach((r) => { dist[Math.min(5, Math.max(1, Math.round(r.rating))) - 1]++; });
-      // catalog snapshots carry community averages beyond the seeded reviews
+      if (s.kind === 'item') {
+        const rs = starred(s);
+        return { avg: rs.length ? rs.reduce((a, r) => a + r.rating, 0) / rs.length : 0, n: rs.length, dist: dist5(rs) };
+      }
+      if (s.kind === 'show') {
+        const rs = starred(s); const x = show(s.id);
+        const base = x ? { avg: x.avg, n: x.reviewCount } : { avg: 0, n: 0 };
+        if (!rs.length) return { avg: base.avg, n: base.n, dist: dist5(rs) };
+        const avg = rs.reduce((a, r) => a + r.rating, 0) / rs.length;
+        return { avg: (base.avg * base.n + avg * rs.length) / (base.n + rs.length), n: base.n + rs.length, dist: dist5(rs) };
+      }
+      if (s.kind === 'list') return { avg: 0, n: 0, dist: [0, 0, 0, 0, 0] };
+      // brand / style: computed from their pieces
+      const pieces = s.kind === 'brand'
+        ? allItems().filter((i) => i.brandId === s.id || (brand(s.id) && i.brandName === brand(s.id)!.name))
+        : allItems().filter((i) => i.styleIds?.includes(s.id) || style(s.id)?.itemIds.includes(i.id));
+      const rs = pieces.flatMap((i) => starred({ kind: 'item', id: i.id }));
       const b = s.kind === 'brand' ? brand(s.id) : undefined;
-      const base = s.kind === 'show' ? show(s.id) : s.kind === 'style' ? style(s.id) : b ? { avg: (b.scores.quality + b.scores.fit + b.scores.fabric + b.scores.price) / 4, reviewCount: b.reviewCount } : undefined;
-      if (!rs.length) return { avg: base?.avg ?? 0, n: base?.reviewCount ?? 0, dist };
+      const st = s.kind === 'style' ? style(s.id) : undefined;
+      const base = b ? { avg: (b.scores.quality + b.scores.fit + b.scores.fabric + b.scores.price) / 4, n: b.reviewCount } : st ? { avg: st.avg, n: st.reviewCount } : { avg: 0, n: 0 };
+      if (!rs.length) return { avg: base.avg, n: base.n, dist: dist5(rs) };
       const avg = rs.reduce((a, r) => a + r.rating, 0) / rs.length;
-      return { avg: base ? (base.avg * base.reviewCount + avg * rs.length) / (base.reviewCount + rs.length) : avg, n: (base?.reviewCount ?? 0) + rs.length, dist };
+      return { avg: (base.avg * base.n + avg * rs.length) / (base.n + rs.length), n: base.n + rs.length, dist: dist5(rs) };
     };
     const ownedFrom = (uid: string, p: Persona) => {
       const have = rawShelves(uid).filter((s) => s.shelf === 'owned').map((s) => s.itemId);
@@ -241,6 +264,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         await repo?.patchShelf(itemId, patch);
       },
       async addReview(r) {
+        if (STARRED.includes(r.targetType) && !(r.rating > 0)) throw new Error('Parçaya ve koleksiyona yıldız gerekir.');
+        if (!STARRED.includes(r.targetType)) r = { ...r, rating: 0 };
         const created = await repo?.addReview(r);
         const review: Review = created ?? { ...r, id: 'tmp' + Date.now(), userId: meId, createdAt: Date.now() };
         patchMe((m) => ({ ...m, reviews: [review, ...m.reviews.filter((x) => !(x.targetType === r.targetType && x.targetId === r.targetId))] }));
@@ -309,6 +334,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         const nl: List = created ?? { ...l, id: 'tmp-' + Date.now(), authorId: meId, saves: 0, createdAt: Date.now() };
         patchMe((m) => ({ ...m, lists: [nl, ...m.lists] }));
         return nl;
+      },
+      savedList: (id) => me.savedLists.includes(id),
+      savesOf: (id) => (list(id)?.saves ?? 0) + (me.savedLists.includes(id) ? 1 : 0),
+      async toggleSaveList(id) {
+        patchMe((m) => ({ ...m, savedLists: m.savedLists.includes(id) ? m.savedLists.filter((x) => x !== id) : [...m.savedLists, id] }));
+        await repo?.toggleSaveList(id);
       },
       async toggleListItem(listId, itemId) {
         patchMe((m) => ({ ...m, lists: m.lists.map((l) => (l.id === listId ? { ...l, itemIds: l.itemIds.includes(itemId) ? l.itemIds.filter((x) => x !== itemId) : [...l.itemIds, itemId] } : l)) }));

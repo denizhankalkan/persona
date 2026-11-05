@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Chip, Eyebrow, Field, StarPicker } from './ui';
+import { Button, Chip, Eyebrow, Field, Small, StarPicker } from './ui';
 import { useStore, type SubjectRef } from '@/store';
 import { BRAND_STATUS_LABEL } from '@/data/repo';
-import type { BrandStatus } from '@/data/types';
+import { STARRED, type BrandStatus } from '@/data/types';
 
 const PLACEHOLDER: Record<SubjectRef['kind'], string> = {
   item: 'İki satır yeter: nasıl oturdu, nerede giydin, tekrar alır mıydın?',
@@ -20,7 +20,8 @@ export function ReviewForm({ subject, onDone }: { subject: SubjectRef; onDone?: 
   const [body, setBody] = useState('');
   const [status, setStatus] = useState<BrandStatus | undefined>();
   const [busy, setBusy] = useState(false);
-  const ok = rating > 0 && body.trim().length > 3;
+  const stars = STARRED.includes(subject.kind);
+  const ok = (!stars || rating > 0) && body.trim().length > 3;
   const submit = async () => {
     if (!ok || busy) return;
     setBusy(true);
@@ -29,15 +30,16 @@ export function ReviewForm({ subject, onDone }: { subject: SubjectRef; onDone?: 
   };
   return (
     <View style={{ gap: 10 }}>
-      <Eyebrow>Sen ne düşünüyorsun?</Eyebrow>
-      <StarPicker value={rating} onChange={setRating} />
+      <Eyebrow>{stars ? 'Sen ne düşünüyorsun?' : 'Tartışmaya katıl'}</Eyebrow>
+      {stars ? <StarPicker value={rating} onChange={setRating} /> : null}
       {subject.kind === 'brand' ? (
         <View style={{ flexDirection: 'row', gap: 6 }}>
           {(Object.keys(BRAND_STATUS_LABEL) as BrandStatus[]).map((s) => <Chip key={s} label={BRAND_STATUS_LABEL[s]} on={status === s} onPress={() => setStatus(status === s ? undefined : s)} />)}
         </View>
       ) : null}
       <Field multiline value={body} onChangeText={setBody} maxLength={600} placeholder={PLACEHOLDER[subject.kind]} />
-      <Button variant="dark" label={busy ? 'Kaydediliyor…' : 'Yorumu kaydet'} disabled={!ok || busy} onPress={submit} />
+      <Button variant="dark" label={busy ? 'Kaydediliyor…' : stars ? 'Yorumu kaydet' : 'Yaz'} disabled={!ok || busy} onPress={submit} />
+      {!stars ? <Small>Yıldız yalnızca modele ve koleksiyona verilir; {subject.kind === 'brand' ? 'markanın' : subject.kind === 'style' ? 'stilin' : 'listenin'} puanı parçalarından hesaplanır.</Small> : null}
     </View>
   );
 }

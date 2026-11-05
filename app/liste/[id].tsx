@@ -4,7 +4,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Band, Body, Chip, Display, Eyebrow, LinkText, Section, Small, Tag } from '@/components/ui';
 import { ItemGrid, ItemRow, fmt } from '@/components/cards';
-import { RatingLine, Reviews } from '@/components/Reviews';
+import { Reviews } from '@/components/Reviews';
 import type { Item } from '@/data/types';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
@@ -16,7 +16,7 @@ import { useTheme } from '@/theme';
 export default function ListScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { c } = useTheme();
-  const { list, item, persona, userName, meId, ownedFrom, isFollowingPersona, togglePersonaFollow, snap, toggleListItem } = useStore();
+  const { list, item, persona, userName, meId, ownedFrom, isFollowingPersona, togglePersonaFollow, snap, toggleListItem, savedList, savesOf, toggleSaveList } = useStore();
   const router = useRouter();
   const l = list(String(id));
   if (!l) return <Screen><Small>Liste bulunamadı.</Small></Screen>;
@@ -42,16 +42,16 @@ export default function ListScreen() {
           <Body style={{ color: c.inkFg, opacity: 0.85 }}>{p?.bio ?? l.description}</Body>
           <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             {p?.isExample ? <Tag label="örnek profil" tone="dashed" /> : null}
-            <Small style={{ color: c.inkMuted }}>{l.itemIds.length} parça · {fmt(l.saves)} kayıt</Small>
+            <Small style={{ color: c.inkMuted }}>{l.itemIds.length} parça · {fmt(savesOf(l.id))} kayıt</Small>
           </View>
         </Band>
 
         <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          {p ? <Chip label={on ? 'Bürünüyorsun ✓' : 'Kimliğine bürün'} on={on} tone="green" onPress={() => togglePersonaFollow(p.id)} /> : <Chip label="Kaydet" tone="green" />}
+          {p ? <Chip label={on ? 'Bürünüyorsun ✓' : 'Kimliğine bürün'} on={on} tone="green" onPress={() => togglePersonaFollow(p.id)} /> : null}
+          {!mine ? <Chip label={savedList(l.id) ? 'Kaydettin ♥' : 'Kaydet'} on={savedList(l.id)} tone={p ? 'ink' : 'green'} onPress={() => toggleSaveList(l.id)} /> : null}
           <Chip label="Paylaş" onPress={share} />
           {owned ? <Small>bu dolaptan sende {owned} parça</Small> : null}
         </View>
-        <RatingLine subject={subject} />
 
         {stores.length ? (
           <Section title="Nereden alışveriş yapıyor?" kicker right={<Small>paylaştığı kadar</Small>}>
@@ -59,7 +59,7 @@ export default function ListScreen() {
           </Section>
         ) : null}
 
-        <Section title={p ? (p.kind === 'person' ? 'Dolabı' : 'Giydikleri') : 'Parçalar'} right={<Small>{items.length} parça</Small>}>
+        <Section title={p ? (p.kind === 'person' ? 'Vitrini' : 'Giydikleri') : 'Parçalar'} ornament right={<Small>{items.length} model · her biri puanlanır</Small>}>
           {clothing.length ? <ItemGrid items={clothing} captions={captions} /> : null}
           {other.length ? <View>{other.map((i) => <ItemRow key={i.id} item={i} note={captions[i.id]} />)}</View> : null}
           {!items.length ? <Small>Liste boş.</Small> : null}
@@ -68,7 +68,7 @@ export default function ListScreen() {
         </Section>
         {p?.kind === 'character' ? <Small>Fotoğraflar: bir parçaya girip resmi ürün linkini ya da dizi karesini ekleyebilirsin.</Small> : null}
 
-        <Reviews subject={subject} title={p ? 'Dolap hakkında' : 'Liste hakkında'} hint="yorumlayanlar" />
+        <Reviews subject={subject} title={p ? 'Dolap hakkında' : 'Liste hakkında'} hint="tartışma; yıldız parçalara" />
         {!p && l.authorId !== 'editor' && !mine ? <Pressable onPress={() => router.push(`/user/${l.authorId}`)}><LinkText label={`${userName(l.authorId)}’in dolabı →`} /></Pressable> : null}
       </Screen>
     </>

@@ -1,8 +1,8 @@
 # Persona
 
-Goodreads ve Letterboxd'nin moda hali. Puanlanabilir beş şey: **parça, marka, defile (koleksiyon), stil (boho, western, sessiz lüks…) ve dolap/liste** (karakter dolapları, personalar, kullanıcı listeleri). Raflar (Bende / İstiyorum), yıldızlı yorumlar, yorum altında tartışma ve beğeni, markalar için "sadığım / ara sıra / koptum", "nereden aldım" ve izin modeli. Gerçek kullanıcıların dolabına yıldız verilmez; kişi puanlanmaz.
+Goodreads ve Letterboxd'nin moda hali. **Letterboxd'da film ne ise bizde model o:** yıldız yalnızca iki esere verilir — **parça** (belirli bir model: "Sézane Clyde trençkot") ve **koleksiyon** (defile: "Chanel İlkbahar/Yaz 2026"). **Marka** (yönetmen), **stil** (tür: boho, western, sessiz lüks…) ve **dolap/liste** (karakter dolapları, persona vitrinleri, kullanıcı listeleri) sayfaları vardır; puanları parçalarından hesaplanır, altlarında tartışma döner, listeler kaydedilir. Kategori (trençkot) sayfa değil, filtredir. Kişi hiçbir zaman puanlanmaz. Raflar (Bende / İstiyorum), "nereden aldım", arkadaş/takip isteği ve izin modeli.
 
-Görsel dil Vogue.com gibi: beyaz zemin, siyah metin, ince çizgiler, köşesiz kutular, Bodoni başlık. Tek vurgu rengi Tiffany mavisi (Pantone 15-5217 TCX, `#53B0AE`), `src/theme.ts`.
+Görsel dil: **siyah · krem · turkuaz.** Krem kâğıt sayfa, siyah bantlar ve sekme çubuğu, tek vurgu Tiffany/İznik turkuazı (Pantone 15-5217 TCX, `#53B0AE`). Köşe yok, ince çizgiler, Bodoni başlık. Osmanlı dokunuşu tek motif: lale ve kıvrık dal (`src/components/Motif.tsx`), yalnızca siyah bantların üstünde, soluk. `src/theme.ts`.
 
 Tek kod tabanı: **iOS + Android + Web** (React Native, Expo SDK 58, TypeScript, Expo Router). Arka uç: **Supabase** (isteğe bağlı; yoksa uygulama cihaz üzerindeki örnek veriyle çalışır).
 
@@ -39,9 +39,9 @@ src/
   data/repo.ts           Repo arayüzü + LocalRepo (AsyncStorage)
   data/supabase.ts       SupabaseRepo (aynı arayüz; defile ve stil kataloğu şimdilik uygulamayla gelir)
   store.tsx              Uygulama durumu, puan hesapları, izinler
-  components/            UI (ui.tsx), kartlar, Reviews (ortak puan + yorum bloğu), Photo/ProductImage
+  components/            UI (ui.tsx), kartlar, Reviews (ortak puan + yorum bloğu), Photo/ProductImage, Motif (lale dokusu, react-native-svg)
   unfurl.ts              Resmi sayfadan fotoğraf okuma
-supabase/schema.sql      Tablolar + RLS + tetikleyiciler (review_likes, user_items, lists, list_items dahil)
+supabase/schema.sql      Tablolar + RLS + tetikleyiciler (review_likes, user_items, lists, list_items, list_saves dahil; reviews.rating 0 = tartışma)
 supabase/seed.sql        Katalog verisi (scripts/make-seed-sql.mjs üretir)
 ```
 
@@ -122,7 +122,7 @@ Derin linkler (`/item/deri-ceket`) için barındırıcıda "tüm yolları index.
 
 Ürün tasarımı canvas'ı (12+ artboard, Letterboxd→Persona haritası, ekranlar) Claude'da yayında; karar günlüğü proje dokümanı `claude/persona-kararlar.md`.
 
-Beyaz zemin, siyah metin, ince çizgiler, köşe yok. Tek vurgu Tiffany mavisi (#53B0AE): linkler, aktif sekme, (+) düğmesi, küçük etiketler. Başlıklar Bodoni Moda, metin DM Sans, tepede PERSONA masthead. Koyu tema otomatik (siyah zemin, aynı kurallar).
+Krem (#F3EEE3) sayfa, siyah (#0B0B0B) bantlar ve sekme çubuğu, turkuaz (#53B0AE) yalnızca linkler, aktif sekme, (+) ve küçük etiketler; hafif turkuaz (#DCEFEE) etiket zemini. Oran: krem %80 · siyah %15 · turkuaz %5. Köşe yok, ince çizgiler. Başlıklar Bodoni Moda, metin DM Sans; tepede laleli siyah PERSONA masthead. Motif kuralı: tek motif (lale + kıvrık dal), yalnızca siyahta, soluk; krem sayfada ya da fotoğraf üstünde asla. Koyu tema otomatik (tam siyah, krem metin).
 
 ## İzin modeli
 

@@ -58,7 +58,7 @@ export default function StyleScreen() {
           </Section>
         ) : null}
 
-        <Reviews subject={subject} title="Trend mi, kalıcı mı?" hint="giyenler ve giymeyenler" />
+        <Reviews subject={subject} title="Trend mi, kalıcı mı?" hint="tartışma; yıldız parçalara" />
 
         {lists.length ? (
           <Section title="Listelerde" kicker>

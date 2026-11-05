@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Display, Divider, Field, LinkText, Masthead, Section, Small, Tag } from '@/components/ui';
+import { Display, Divider, Field, LinkText, Section, Small, Tag } from '@/components/ui';
 import { BrandRow, ItemGrid, ItemRow, ListCard, PersonRow, ShowCard, StyleCard } from '@/components/cards';
 import { useStore } from '@/store';
 import type { Style } from '@/data/types';
@@ -14,7 +14,7 @@ export default function DiscoverScreen() {
   const [q, setQ] = useState('');
   const query = q.trim().toLowerCase();
   const has = (s: string) => s.toLowerCase().includes(query);
-  const label = (id: string, vis: string) => { const s = followStatus(id); return s === 'accepted' ? 'Takiptesin ✓' : s === 'pending' ? 'İstek gönderildi' : vis === 'public' ? 'Takip et' : 'İstek gönder'; };
+  const label = (id: string, vis: string) => { const s = followStatus(id); return s === 'accepted' ? 'Arkadaşsınız ✓' : s === 'pending' ? 'İstek gönderildi' : vis === 'public' ? 'Takip et' : 'Arkadaş ol'; };
   const tone = (id: string) => (followStatus(id) === 'accepted' ? 'green' : followStatus(id) === 'pending' ? 'gold' : 'ink') as 'green' | 'gold' | 'ink';
 
   const lists = allLists().filter((l) => !query || has(l.title + ' ' + (l.description ?? '')));
@@ -28,10 +28,8 @@ export default function DiscoverScreen() {
   for (let i = 0; i < styles.length; i += 2) rows.push(styles.slice(i, i + 2));
 
   return (
-    <Screen tabbed>
+    <Screen tabbed masthead>
       <View style={{ gap: 14 }}>
-        <Masthead />
-        <Divider strong />
         <Display size="lg">Keşfet</Display>
         <Field value={q} onChangeText={setQ} placeholder="Parça, marka, defile, stil, liste, kişi" autoCapitalize="none" />
       </View>
@@ -79,7 +77,7 @@ export default function DiscoverScreen() {
         </Section>
       ) : null}
 
-      <Section title="Kişiler" right={<Small>izin verdikleri kadar</Small>}>
+      <Section title="Arkadaşlar ve kişiler" right={<Small>aldıklarını, izin verdikleri kadar</Small>}>
         <View>
           {users.map((u) => (
             <PersonRow key={u.id} u={u} right={<Pressable onPress={() => toggleFollow(u.id)}><Tag label={label(u.id, u.visibility)} tone={tone(u.id)} /></Pressable>} />

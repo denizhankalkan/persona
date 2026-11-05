@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Avatar, Body, Button, Display, Divider, Eyebrow, LinkText, Masthead, Section, Small, Tag } from '@/components/ui';
+import { Avatar, Body, Button, Display, Divider, Eyebrow, LinkText, Section, Small, Tag } from '@/components/ui';
 import { ItemStrip, ListCard, ReviewCard, ShowCard, timeAgo } from '@/components/cards';
 import { ProductImage } from '@/components/ProductImage';
 import { useStore } from '@/store';
@@ -86,10 +86,8 @@ export default function FeedScreen() {
   const fol = following();
   const shows = snap.shows.slice(0, 3);
   return (
-    <Screen tabbed>
+    <Screen tabbed masthead>
       <View style={{ gap: 14 }}>
-        <Masthead />
-        <Divider strong />
         <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <Display size="lg">Akış</Display>
           <Small>{fol.length ? `${fol.length} kişiyi takip ediyorsun` : 'algoritma yok'}</Small>

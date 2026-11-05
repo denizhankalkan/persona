@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Avatar, Body, Button, Card, Chip, Display, Divider, Eyebrow, Field, LinkText, Masthead, Section, Small, Tag } from '@/components/ui';
+import { Avatar, Body, Button, Card, Chip, Display, Divider, Eyebrow, Field, LinkText, Section, Small, Tag } from '@/components/ui';
 import { ItemGrid, ItemRow, ListCard, PersonRow, ReviewList } from '@/components/cards';
 import { ProductImage } from '@/components/ProductImage';
 import { VISIBILITY_HELP, VISIBILITY_LABEL } from '@/data/repo';
@@ -47,10 +47,8 @@ export default function WardrobeScreen() {
     </View>
   );
   return (
-    <Screen tabbed>
+    <Screen tabbed masthead>
       <View style={{ gap: 14 }}>
-        <Masthead />
-        <Divider strong />
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Display size="lg">Dolabım</Display>
           <Pressable onPress={() => setEditing((e) => !e)}><Tag label={editing ? 'Vazgeç' : VISIBILITY_LABEL[me.profile.visibility]} tone="gold" /></Pressable>

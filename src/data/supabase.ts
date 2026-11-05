@@ -44,7 +44,7 @@ export class SupabaseRepo implements Repo {
     const sb = supabase();
     const { data: auth } = await sb.auth.getUser();
     this.meId = auth.user?.id ?? '';
-    const [brands, items, personas, personaItems, purchases, scenes, sceneItems, profiles, shelves, reviews, comments, follows, pfollows, photos, links, likes, userItems, lists, listItems] = await Promise.all([
+    const [brands, items, personas, personaItems, purchases, scenes, sceneItems, profiles, shelves, reviews, comments, follows, pfollows, photos, links, likes, userItems, lists, listItems, listSaves] = await Promise.all([
       sb.from('brands').select('*'),
       sb.from('items').select('*'),
       sb.from('personas').select('*'),
@@ -64,6 +64,7 @@ export class SupabaseRepo implements Repo {
       sb.from('user_items').select('*'),
       sb.from('lists').select('*'),
       sb.from('list_items').select('*').order('position'),
+      sb.from('list_saves').select('*'),
     ]);
     const B: Brand[] = (brands.data ?? []).map((b: any) => ({ id: b.id, name: b.name, origin: b.origin ?? '', scores: { quality: b.quality ?? 3, fit: b.fit ?? 3, fabric: b.fabric ?? 3, price: b.price ?? 3 }, leftPct: b.left_pct ?? 0, reviewCount: b.review_count ?? 0 }));
     const I: Item[] = (items.data ?? []).map((i: any) => ({ id: i.id, type: i.type, name: i.name, category: i.category, brandName: i.brand_name ?? undefined, brandId: i.brand_id ?? undefined, color: i.color ?? '#999', priceText: i.price_text ?? undefined, year: i.year ?? undefined, verification: i.verification ?? 'none', note: i.note ?? undefined, notes: i.notes ?? undefined, searchQuery: i.search_query ?? i.name, ownedCount: i.owned_count ?? 0, url: i.url ?? undefined, imageUrl: i.image_url ?? undefined }));
@@ -102,6 +103,7 @@ export class SupabaseRepo implements Repo {
       items: UI.filter((i) => i.addedBy === this.meId),
       lists: L.filter((l) => l.authorId === this.meId),
       likedReviews: (likes.data ?? []).filter((l: any) => l.user_id === this.meId).map((l: any) => l.review_id),
+      savedLists: (listSaves.data ?? []).filter((l: any) => l.user_id === this.meId).map((l: any) => l.list_id),
       introSeen: true,
     };
     return {
@@ -201,6 +203,12 @@ export class SupabaseRepo implements Repo {
     const { data } = await sb.from('list_items').select('item_id').match({ list_id: listId, item_id: itemId });
     if (data && data.length) { await sb.from('list_items').delete().match({ list_id: listId, item_id: itemId }); return; }
     await sb.from('list_items').insert({ list_id: listId, item_id: itemId, position: 999 });
+  }
+  async toggleSaveList(listId: string) {
+    const sb = supabase();
+    const { data } = await sb.from('list_saves').select('list_id').match({ user_id: this.meId, list_id: listId });
+    if (data && data.length) { await sb.from('list_saves').delete().match({ user_id: this.meId, list_id: listId }); return false; }
+    await sb.from('list_saves').insert({ user_id: this.meId, list_id: listId }); return true;
   }
 }
 
